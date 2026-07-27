@@ -1,0 +1,33 @@
+# Build & Astro output
+dist/
+.astro/
+
+# Node dependencies
+node_modules/
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.production
+.env.local
+.env.*.local
+
+# IDEs & System files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Cache & temporary files
+.cache/
+tmp/
+
+AGENTS.md
+README.md

@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import BootSequence from '../components/BootSequence.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'Blue team & cybersecurity portfolio.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>./ramdn.sh --render</title>
+    <script is:inline>
+      if (sessionStorage.getItem('booted') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('is-booted');
+      }
+    </script>
+  </head>
+  <body>
+    <BootSequence />
+    
+    <!-- BACKGROUND FX LAYERS (ibraradi style) -->
+    <div class="fx fx-grid" aria-hidden="true"></div>
+    <div class="fx fx-scan" aria-hidden="true"></div>
+    <div class="fx fx-spot" aria-hidden="true"></div>
+
+    <header class="classbar">
+      <div class="classbar-inner">
+        <a class="cb-left" href="/" title="Home">
+          ~/portfolio
+        </a>
+        <span class="cb-right">
+          <button type="button" class="fx-btn" data-fx-toggle title="Toggle cursor animation FX">FX: ON</button>
+          <i class="led-dot"></i>
+          <span data-clock>00:00:00</span> EGY
+        </span>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="doc">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="docfoot">
+      <div class="docfoot-inner">
+        <span class="eof-tag">-- EOF --</span>
+        <span class="dim footer-cmd">guest@portfolio:~$ <span class="cmd-echo">exit</span></span>
+      </div>
+    </footer>
+
+    <script src="../scripts/scramble.ts"></script>
+    <script>
+      function updateClock() {
+        const clockEls = document.querySelectorAll<HTMLElement>('[data-clock]');
+        if (!clockEls.length) return;
+        const now = new Date();
+        const str = now.toLocaleTimeString('en-US', {
+          timeZone: 'Africa/Cairo',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+        clockEls.forEach((el) => (el.textContent = str));
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    </script>
+  </body>
+</html>

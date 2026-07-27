@@ -1,0 +1,90 @@
+---
+interface Props {
+  title: string;
+  date: string;
+  tags: string[];
+  summary: string;
+  excerpt: string;
+  href: string;
+}
+const { title, date, tags, summary, href } = Astro.props;
+
+const isProject = href.includes('/projects/');
+---
+<article class="card">
+  <div class="card-top">
+    <span class="card-date">[{date}]</span>
+    <div class="tag-row">
+      {tags.map((t) => <span class="mx-tag">{t}</span>)}
+    </div>
+  </div>
+  <h3 class="card-title">
+    <a href={href}>{title}</a>
+  </h3>
+  <p class="card-summary">{summary}</p>
+
+  <div class="card-action">
+    <a class="btn" href={href}>
+      {isProject ? 'view full project details →' : 'view full writeup details →'}
+    </a>
+  </div>
+</article>
+
+<style>
+  .card {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover {
+    border-color: var(--border-bright);
+    border-left-color: var(--blue-bright);
+    transform: translateX(3px);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .card-date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--blue-bright);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 2px 0 0 0;
+  }
+  .card-title a {
+    color: var(--text);
+    transition: color 0.15s ease;
+  }
+  .card-title a:hover {
+    color: var(--blue-bright);
+    text-decoration: none;
+  }
+  .card-summary {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .card-action {
+    margin-top: auto;
+    padding-top: 6px;
+  }
+</style>

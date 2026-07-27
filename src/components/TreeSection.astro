@@ -1,0 +1,120 @@
+---
+interface Item {
+  slug: string;
+  title: string;
+  date: string;
+  summary: string;
+  tags: string[];
+}
+interface Props {
+  cmd: string; // e.g. "tree ./projects"
+  items: Item[];
+  basePath: string; // e.g. "/projects"
+  moreHref: string;
+  maxShown?: number;
+}
+const { items, basePath, moreHref, maxShown = 5 } = Astro.props;
+const shown = items.slice(0, maxShown);
+const isProject = basePath.includes('projects');
+---
+<div class="tree-container">
+  <div class="tree-list">
+    {shown.map((item) => (
+      <div class="tree-item-card">
+        <div class="tree-item-head">
+          <h3 class="tree-item-title" data-scramble>{item.title}</h3>
+          <span class="tree-item-date">[{item.date}]</span>
+        </div>
+        <p class="tree-item-summary">{item.summary}</p>
+        <div class="tree-item-tags">
+          {item.tags.map((t) => <span class="mx-tag">{t}</span>)}
+        </div>
+        <div class="tree-item-action">
+          <a class="btn" href={`${basePath}/${item.slug}/`}>
+            {isProject ? 'view full project details →' : 'view full writeup details →'}
+          </a>
+        </div>
+      </div>
+    ))}
+    <div class="see-more-card">
+      <a class="btn see-all-btn" href={moreHref}>
+        {isProject ? 'see all projects →' : 'see all writeups →'}
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tree-container {
+    margin-top: 16px;
+  }
+  .tree-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tree-item-card {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .tree-item-card:hover {
+    border-color: var(--border-bright);
+    border-left-color: var(--blue-bright);
+    transform: translateX(3px);
+  }
+  .tree-item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .tree-item-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+  .tree-item-date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--blue-bright);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tree-item-summary {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 14px 0;
+  }
+  .tree-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .tree-item-action {
+    display: flex;
+  }
+  .see-more-card {
+    padding-top: 8px;
+    display: flex;
+  }
+  .see-all-btn {
+    border-color: var(--blue-bright);
+    color: var(--blue-bright);
+    font-weight: 600;
+  }
+  .see-all-btn:hover {
+    background: var(--blue-glow);
+    color: #fff;
+  }
+</style>

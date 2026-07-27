@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('writeups', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<Base title={`${entry.data.title} — write_ups`}>
+  <article class="dsec">
+    <div style="margin-bottom: 24px;">
+      <a href="/write_ups/" class="btn" style="font-size:0.82rem;">
+        <span>&lt; cd ../write_ups</span>
+      </a>
+    </div>
+
+    <div class="finding info" style="margin-bottom: 28px;">
+      <div class="finding-top">
+        <span class="finding-id">NOTE-{entry.id.toUpperCase()}</span>
+        <span class="finding-period">{entry.data.date}</span>
+      </div>
+      <h1 class="finding-title" style="font-size: 1.8rem; color: var(--blue-bright); margin-bottom: 12px;">{entry.data.title}</h1>
+      <p class="finding-sum">{entry.data.summary}</p>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+        {entry.data.tags.map((t) => <span class="mx-tag">{t}</span>)}
+      </div>
+    </div>
+
+    <div class="doc-article-body">
+      <div class="markdown-body">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .doc-article-body {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 32px;
+    border-radius: 4px;
+  }
+  .markdown-body :global(h2) {
+    color: var(--blue-bright);
+    margin-top: 36px;
+    margin-bottom: 14px;
+    font-size: 1.3rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    font-family: var(--font-sans);
+    font-weight: 700;
+  }
+  .markdown-body :global(h3) { color: var(--text); margin-top: 24px; margin-bottom: 10px; font-size: 1.05rem; }
+  .markdown-body :global(p) { margin: 0 0 16px 0; color: var(--text); line-height: 1.65; }
+  .markdown-body :global(ul), .markdown-body :global(ol) { margin: 0 0 16px 0; padding-left: 22px; color: var(--text); }
+  .markdown-body :global(li) { margin-bottom: 6px; }
+  .markdown-body :global(pre) { margin: 16px 0 24px 0; }
+  .markdown-body :global(strong) { color: var(--blue-bright); }
+
+  @media (max-width: 600px) {
+    .doc-article-body { padding: 18px; }
+  }
+</style>
