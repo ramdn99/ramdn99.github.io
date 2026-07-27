@@ -1,4 +1,4 @@
-// Scramble text reveal & Ocean of Asterisks (*) Grid with Ultra-Fast Line-Interpolated Cursor Tracking
+// Scramble text reveal & Ocean of Asterisks (*) Grid with Ultra-Fast Line-Interpolated Cursor & Touch Tracking
 
 const HASH_CHARS = '01#$%&*!?/\\<>[]{}ABCDEF0123456789';
 
@@ -50,12 +50,12 @@ function reveal(el: HTMLElement) {
   });
 }
 
-// ULTRA-FAST LINE-INTERPOLATED CURSOR TRACKING
+// ULTRA-FAST LINE-INTERPOLATED CURSOR & TOUCH TRACKING
 let isOceanFxEnabled = true;
 
 function initAsteriskOcean() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion || window.innerWidth < 640) return;
+  if (reduceMotion) return;
 
   const savedState = localStorage.getItem('fx_ocean_enabled');
   if (savedState !== null) {
@@ -76,8 +76,10 @@ function initAsteriskOcean() {
   let width = (canvas.width = window.innerWidth);
   let height = (canvas.height = window.innerHeight);
 
-  const SPACING = 14;
-  const DISTURB_RADIUS = 16;
+  // Dynamic spacing for mobile responsiveness vs desktop precision
+  const getSpacing = () => (window.innerWidth < 640 ? 18 : 14);
+  let SPACING = getSpacing();
+  const DISTURB_RADIUS = window.innerWidth < 640 ? 22 : 16;
   const DECAY_DURATION = 1400;
 
   let cols = Math.ceil(width / SPACING) + 1;
@@ -85,6 +87,7 @@ function initAsteriskOcean() {
   let grid: Float64Array = new Float64Array(cols * rows);
 
   function buildGrid() {
+    SPACING = getSpacing();
     cols = Math.ceil(width / SPACING) + 1;
     rows = Math.ceil(height / SPACING) + 1;
     grid = new Float64Array(cols * rows);
@@ -133,25 +136,44 @@ function initAsteriskOcean() {
     }
   }
 
-  window.addEventListener('pointermove', (e) => {
+  function handleInteraction(clientX: number, clientY: number) {
     if (!isOceanFxEnabled) return;
     const now = performance.now();
-    const currX = e.clientX;
-    const currY = e.clientY;
-
     if (prevX < 0) {
-      prevX = currX;
-      prevY = currY;
+      prevX = clientX;
+      prevY = clientY;
     }
+    disturbLine(prevX, prevY, clientX, clientY, now);
+    prevX = clientX;
+    prevY = clientY;
 
-    disturbLine(prevX, prevY, currX, currY, now);
-    prevX = currX;
-    prevY = currY;
-  });
+    // Update spotlight coordinates for touch & pointer
+    const gx = (clientX / window.innerWidth) * 100;
+    const gy = (clientY / window.innerHeight) * 100;
+    document.documentElement.style.setProperty('--gx', `${gx}%`);
+    document.documentElement.style.setProperty('--gy', `${gy}%`);
+  }
+
+  window.addEventListener('pointermove', (e) => handleInteraction(e.clientX, e.clientY));
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+      handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches[0]) {
+      prevX = e.touches[0].clientX;
+      prevY = e.touches[0].clientY;
+      handleInteraction(prevX, prevY);
+    }
+  }, { passive: true });
 
   let lastRandomShuffle = 0;
 
   function render(now: number) {
+    if (!ctx) return;
+
     if (!isOceanFxEnabled) {
       canvas.style.display = 'none';
       requestAnimationFrame(render);
@@ -159,7 +181,7 @@ function initAsteriskOcean() {
     }
 
     canvas.style.display = 'block';
-    ctx?.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, width, height);
     ctx.shadowBlur = 0;
     ctx.shadowColor = 'transparent';
     ctx.font = '11px "JetBrains Mono", monospace';
@@ -187,23 +209,19 @@ function initAsteriskOcean() {
           const fadeAlpha = Math.sin(progress * Math.PI);
 
           if (progress < 0.30) {
-            // Phase 1: Immediate contact disturbance -> '#' in crisp dark slate-white
             ctx.fillStyle = '#6584a8';
             ctx.globalAlpha = 0.7 + fadeAlpha * 0.3;
             ctx.fillText('#', px, py);
           } else if (progress < 0.65) {
-            // Phase 2: '$' in dark blue-slate
             ctx.fillStyle = '#2f4562';
             ctx.globalAlpha = 0.45 + fadeAlpha * 0.25;
             ctx.fillText('$', px, py);
           } else {
-            // Phase 3: '*' in dark navy-slate
             ctx.fillStyle = '#1e2d42';
             ctx.globalAlpha = 0.3 + fadeAlpha * 0.2;
             ctx.fillText('*', px, py);
           }
         } else {
-          // Calm background ocean: darkest ambient slate '*'
           ctx.fillStyle = '#121c29';
           ctx.globalAlpha = 0.15;
           ctx.fillText('*', px, py);
@@ -241,16 +259,6 @@ function initAsteriskOcean() {
   });
 }
 
-// MOUSE SPOTLIGHT FX (ibraradi style)
-function initSpotlight() {
-  window.addEventListener('pointermove', (e) => {
-    const gx = (e.clientX / window.innerWidth) * 100;
-    const gy = (e.clientY / window.innerHeight) * 100;
-    document.documentElement.style.setProperty('--gx', `${gx}%`);
-    document.documentElement.style.setProperty('--gy', `${gy}%`);
-  });
-}
-
 function init() {
   const targets = document.querySelectorAll<HTMLElement>('[data-scramble]');
   targets.forEach(prepare);
@@ -278,7 +286,6 @@ function init() {
   }
 
   initAsteriskOcean();
-  initSpotlight();
 }
 
 if (document.readyState === 'loading') {

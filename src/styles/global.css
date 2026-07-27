@@ -817,10 +817,15 @@ tr:nth-child(even),
 
 @media (max-width: 480px) {
   .cb-right {
+    gap: 6px;
     font-size: 0.7rem;
   }
+  .fx-btn {
+    padding: 2px 6px;
+    font-size: 0.68rem;
+  }
   .dh-name {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
   .dcomms {
     grid-template-columns: 1fr;
