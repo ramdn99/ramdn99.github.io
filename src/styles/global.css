@@ -77,7 +77,6 @@ body {
 .fx-scan {
   background: repeating-linear-gradient(0deg, rgba(255,255,255, 0.018) 0 1px, transparent 1px 3px);
   opacity: 0.6;
-  animation: scanmove 12s linear infinite;
 }
 @keyframes scanmove {
   to { background-position: 0 300px; }
