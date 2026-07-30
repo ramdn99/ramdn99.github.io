@@ -1,0 +1,171 @@
+---
+interface Props {
+  tags: string[];
+}
+const { tags } = Astro.props;
+---
+<div class="tag-filter-bar" data-tag-filter-bar>
+  <span class="tag-filter-label">
+    <span class="dim">$</span> filter --tag:
+  </span>
+  <div class="tag-filter-options">
+    <button type="button" class="tag-btn tag-btn-active" data-tag="all">
+      all
+    </button>
+    {tags.map((t) => (
+      <button type="button" class="tag-btn" data-tag={t}>
+        {t}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  function setupTagFilter() {
+    const filterBars = document.querySelectorAll('[data-tag-filter-bar]');
+    
+    filterBars.forEach((bar) => {
+      const buttons = bar.querySelectorAll<HTMLButtonElement>('.tag-btn');
+      const section = bar.closest('.dsec');
+      if (!section) return;
+      
+      const cards = section.querySelectorAll<HTMLElement>('.card[data-tags]');
+      const metaSpan = section.querySelector<HTMLElement>('.dsec-meta');
+      const totalCount = cards.length;
+      
+      const activeTags = new Set<string>();
+
+      function updateUIAndFilter() {
+        const allBtn = bar.querySelector<HTMLButtonElement>('.tag-btn[data-tag="all"]');
+
+        if (activeTags.size === 0) {
+          buttons.forEach((b) => b.classList.remove('tag-btn-active'));
+          if (allBtn) allBtn.classList.add('tag-btn-active');
+        } else {
+          if (allBtn) allBtn.classList.remove('tag-btn-active');
+          buttons.forEach((b) => {
+            const tag = b.getAttribute('data-tag');
+            if (tag !== 'all') {
+              if (activeTags.has(tag!)) {
+                b.classList.add('tag-btn-active');
+              } else {
+                b.classList.remove('tag-btn-active');
+              }
+            }
+          });
+        }
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const rawTags = card.getAttribute('data-tags');
+          let cardTags: string[] = [];
+          try {
+            cardTags = rawTags ? JSON.parse(rawTags) : [];
+          } catch {
+            cardTags = [];
+          }
+
+          if (activeTags.size === 0) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            // Card must match all selected active tags
+            const matches = Array.from(activeTags).every((t) => cardTags.includes(t));
+            if (matches) {
+              card.style.display = '';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+
+        if (metaSpan) {
+          if (activeTags.size === 0) {
+            metaSpan.textContent = `${totalCount} entries`;
+          } else {
+            const activeList = Array.from(activeTags).map((t) => `#${t}`).join(', ');
+            metaSpan.textContent = `${visibleCount} of ${totalCount} entries (${activeList})`;
+          }
+        }
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tag = btn.getAttribute('data-tag');
+          if (!tag) return;
+
+          if (tag === 'all') {
+            activeTags.clear();
+          } else {
+            if (activeTags.has(tag)) {
+              activeTags.delete(tag);
+            } else {
+              activeTags.add(tag);
+            }
+          }
+
+          updateUIAndFilter();
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupTagFilter);
+  } else {
+    setupTagFilter();
+  }
+</script>
+
+<style>
+  .tag-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 10px 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+  }
+  .tag-filter-label {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tag-filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .tag-btn {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: lowercase;
+  }
+  .tag-btn:hover {
+    color: var(--blue-bright);
+    border-color: var(--blue);
+    background: rgba(47, 129, 247, 0.08);
+  }
+  .tag-btn.tag-btn-active {
+    color: var(--blue-bright);
+    background: rgba(47, 129, 247, 0.15);
+    border-color: var(--blue-bright);
+    box-shadow: 0 0 8px rgba(47, 129, 247, 0.25);
+    font-weight: 700;
+  }
+</style>

@@ -2,7 +2,8 @@
 title: "“Polys” — Cryptography Challenge in CyCTF Qualifications by Cyshield"
 date: "13-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
-summary: "Category: Cryptography"
+summary: "Polynomial-based cryptography challenge analysis and algebraic flag recovery."
+readTime: "3 min"
 mediumUrl: "https://medium.com/@zeroXmoRamadan/polys-cryptography-challenge-in-cyCTF-qualifications-by-cyshield-6414258f78b8"
 ---
 

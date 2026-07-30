@@ -2,7 +2,8 @@
 title: "“Symmetric” — Cryptography Challenge in CyCTF Qualifications by Cyshield"
 date: "09-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
-summary: "Category: Cryptography"
+summary: "Reversing custom XOR and modular arithmetic encryption algorithms."
+readTime: "6 min"
 mediumUrl: "https://medium.com/@zeroXmoRamadan/symmetric-cryptography-challenge-in-cyctf-qualifications-by-cyshield-e854721c8c77"
 ---
 

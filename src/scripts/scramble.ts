@@ -50,17 +50,10 @@ function reveal(el: HTMLElement) {
   });
 }
 
-// ULTRA-FAST LINE-INTERPOLATED CURSOR & TOUCH TRACKING
-let isOceanFxEnabled = true;
-
-function initAsteriskOcean() {
+// AMBIENT BACKGROUND SYMBOLS GRID (No cursor tracking)
+function initAmbientAsteriskOcean() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) return;
-
-  const savedState = localStorage.getItem('fx_ocean_enabled');
-  if (savedState !== null) {
-    isOceanFxEnabled = savedState === 'true';
-  }
 
   const canvas = document.createElement('canvas');
   canvas.id = 'asterisk-ocean-canvas';
@@ -76,10 +69,8 @@ function initAsteriskOcean() {
   let width = (canvas.width = window.innerWidth);
   let height = (canvas.height = window.innerHeight);
 
-  // Dynamic spacing for mobile responsiveness vs desktop precision
   const getSpacing = () => (window.innerWidth < 640 ? 18 : 14);
   let SPACING = getSpacing();
-  const DISTURB_RADIUS = window.innerWidth < 640 ? 22 : 16;
   const DECAY_DURATION = 1400;
 
   let cols = Math.ceil(width / SPACING) + 1;
@@ -101,98 +92,23 @@ function initAsteriskOcean() {
     buildGrid();
   });
 
-  let prevX = -1000;
-  let prevY = -1000;
-
-  function disturbLine(x0: number, y0: number, x1: number, y1: number, now: number) {
-    const dist = Math.hypot(x1 - x0, y1 - y0);
-    const steps = Math.max(1, Math.ceil(dist / 6));
-
-    for (let s = 0; s <= steps; s++) {
-      const t = s / steps;
-      const rx = x0 + (x1 - x0) * t;
-      const ry = y0 + (y1 - y0) * t;
-
-      const cMin = Math.max(0, Math.floor((rx - DISTURB_RADIUS) / SPACING));
-      const cMax = Math.min(cols - 1, Math.ceil((rx + DISTURB_RADIUS) / SPACING));
-      const rMin = Math.max(0, Math.floor((ry - DISTURB_RADIUS) / SPACING));
-      const rMax = Math.min(rows - 1, Math.ceil((ry + DISTURB_RADIUS) / SPACING));
-
-      const rSq = DISTURB_RADIUS * DISTURB_RADIUS;
-
-      for (let r = rMin; r <= rMax; r++) {
-        const ny = r * SPACING;
-        const dy = ny - ry;
-        const dy2 = dy * dy;
-        const rowOffset = r * cols;
-        for (let c = cMin; c <= cMax; c++) {
-          const nx = c * SPACING;
-          const dx = nx - rx;
-          if (dx * dx + dy2 < rSq) {
-            grid[rowOffset + c] = now;
-          }
-        }
-      }
-    }
-  }
-
-  function handleInteraction(clientX: number, clientY: number) {
-    if (!isOceanFxEnabled) return;
-    const now = performance.now();
-    if (prevX < 0) {
-      prevX = clientX;
-      prevY = clientY;
-    }
-    disturbLine(prevX, prevY, clientX, clientY, now);
-    prevX = clientX;
-    prevY = clientY;
-
-    // Update spotlight coordinates for touch & pointer
-    const gx = (clientX / window.innerWidth) * 100;
-    const gy = (clientY / window.innerHeight) * 100;
-    document.documentElement.style.setProperty('--gx', `${gx}%`);
-    document.documentElement.style.setProperty('--gy', `${gy}%`);
-  }
-
-  window.addEventListener('pointermove', (e) => handleInteraction(e.clientX, e.clientY));
-  window.addEventListener('touchmove', (e) => {
-    if (e.touches && e.touches[0]) {
-      handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchstart', (e) => {
-    if (e.touches && e.touches[0]) {
-      prevX = e.touches[0].clientX;
-      prevY = e.touches[0].clientY;
-      handleInteraction(prevX, prevY);
-    }
-  }, { passive: true });
-
   let lastRandomShuffle = 0;
 
   function render(now: number) {
     if (!ctx) return;
 
-    if (!isOceanFxEnabled) {
-      canvas.style.display = 'none';
-      requestAnimationFrame(render);
-      return;
-    }
-
-    canvas.style.display = 'block';
     ctx.clearRect(0, 0, width, height);
     ctx.shadowBlur = 0;
     ctx.shadowColor = 'transparent';
     ctx.font = '11px "JetBrains Mono", monospace';
 
-    // Ambient background shuffle trigger every ~300ms
-    if (now - lastRandomShuffle > 300) {
+    // Ambient background symbol random appearance (~250ms)
+    if (now - lastRandomShuffle > 250) {
       lastRandomShuffle = now;
       const totalNodes = cols * rows;
-      for (let k = 0; k < 2; k++) {
+      for (let k = 0; k < 3; k++) {
         const randIdx = Math.floor(Math.random() * totalNodes);
-        grid[randIdx] = now - Math.floor(Math.random() * 600);
+        grid[randIdx] = now;
       }
     }
 
@@ -233,30 +149,23 @@ function initAsteriskOcean() {
   }
 
   requestAnimationFrame(render);
+}
 
-  function updateToggleButtons() {
-    const btns = document.querySelectorAll<HTMLElement>('[data-fx-toggle]');
-    btns.forEach((btn) => {
-      btn.textContent = isOceanFxEnabled ? 'FX: ON' : 'FX: OFF';
-      btn.setAttribute('aria-pressed', String(isOceanFxEnabled));
-      if (isOceanFxEnabled) {
-        btn.classList.add('fx-active');
-      } else {
-        btn.classList.remove('fx-active');
-      }
-    });
-  }
+// Lightweight spotlight tracking for CSS radial gradient
+function initSpotlightTracking() {
+  const handlePointer = (clientX: number, clientY: number) => {
+    const gx = (clientX / window.innerWidth) * 100;
+    const gy = (clientY / window.innerHeight) * 100;
+    document.documentElement.style.setProperty('--gx', `${gx}%`);
+    document.documentElement.style.setProperty('--gy', `${gy}%`);
+  };
 
-  updateToggleButtons();
-
-  document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('[data-fx-toggle]');
-    if (btn) {
-      isOceanFxEnabled = !isOceanFxEnabled;
-      localStorage.setItem('fx_ocean_enabled', String(isOceanFxEnabled));
-      updateToggleButtons();
+  window.addEventListener('pointermove', (e) => handlePointer(e.clientX, e.clientY));
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+      handlePointer(e.touches[0].clientX, e.touches[0].clientY);
     }
-  });
+  }, { passive: true });
 }
 
 function init() {
@@ -285,7 +194,8 @@ function init() {
     });
   }
 
-  initAsteriskOcean();
+  initAmbientAsteriskOcean();
+  initSpotlightTracking();
 }
 
 if (document.readyState === 'loading') {

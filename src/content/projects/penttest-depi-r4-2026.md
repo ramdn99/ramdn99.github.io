@@ -5,6 +5,8 @@ tags: ["laravel", "pentesting", "web-security", "vulnerable-lab", "depi", "owasp
 summary: "An educational, intentionally vulnerable Laravel web application designed for web application penetration testing, vulnerability analysis, and secure code review (DEPI Round 4 Graduation Project)."
 ---
 
+![DEPI Round 4 - Infrastructure & Security Track](/images/projects/penttest-depi-r4-2026.jpg)
+
 # CIU Student Portal - Web Application Security Assessment Lab
 
 An educational, intentionally vulnerable Laravel web application designed as a controlled laboratory environment for practicing web application penetration testing, vulnerability analysis, and secure code review.

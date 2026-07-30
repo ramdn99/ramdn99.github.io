@@ -5,6 +5,8 @@ tags: ["python", "recon", "web-security", "cli-tool", "scanner", "cve", "wappaly
 summary: "A fast CLI tool for automated web recon, technology identification, port scanning, directory brute-forcing, passive secret discovery, and local CVE matching."
 ---
 
+![3asfoor — Web Scanner](/images/projects/web-scanner.jpg)
+
 # 3asfoor — Web Recon & Vulnerability Scanner
 
 A CLI tool that, given only a domain, performs comprehensive web reconnaissance:

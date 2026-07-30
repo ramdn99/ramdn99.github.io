@@ -2,7 +2,8 @@
 title: "“Locked Out” — 2nd Forensics Challenge in Connectors CTF Qualifications by Connectors Team"
 date: "17-09-2025"
 tags: ['writeup', 'ctf', 'forensics', 'digital-forensics', 'dfir']
-summary: "Category: Digital Forensics and Incident Response (DFIR)."
+summary: "Memory forensics and password hash cracking using Volatility and hashcat."
+readTime: "3 min"
 mediumUrl: "https://medium.com/@zeroXmoRamadan/locked-out-2nd-digital-forensics-challenge-in-connectorsctf-qualifications-by-connectors-team-ab105e1d7c75"
 ---
 

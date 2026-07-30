@@ -14,7 +14,7 @@
       <div class="boot-inner">
         <div class="boot-header-badge">
           <span class="badge-tag">SOC//SYSTEM_BOOT</span>
-          <span class="badge-status">INITIALIZING</span>
+          <span id="boot-status-badge" class="badge-status">INITIALIZING</span>
         </div>
         <div id="boot-lines" class="boot-lines"></div>
         <div class="boot-progress-wrap">
@@ -41,12 +41,12 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s ease;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s ease;
     backdrop-filter: blur(20px);
   }
   #boot-overlay.hidden {
     opacity: 0;
-    transform: scale(1.03);
+    transform: scale(1.02);
     visibility: hidden;
     pointer-events: none;
   }
@@ -55,13 +55,13 @@
   }
   .boot-term-container {
     width: 100%;
-    max-width: 640px;
+    max-width: 650px;
   }
   .boot-term {
     width: 100%;
     background: #080d16;
     border: 1px solid rgba(47, 129, 247, 0.35);
-    border-radius: 12px;
+    border-radius: 14px;
     box-shadow: 0 0 50px rgba(47, 129, 247, 0.2), inset 0 0 15px rgba(47, 129, 247, 0.05);
     overflow: hidden;
   }
@@ -82,9 +82,9 @@
     height: 11px;
     border-radius: 50%;
   }
-  .term-dot-red { background: #ff5f56; }
-  .term-dot-yellow { background: #ffbd2e; }
-  .term-dot-green { background: #27c93f; }
+  .term-dot-red { background: #ff5f56; box-shadow: 0 0 6px rgba(255, 95, 86, 0.6); }
+  .term-dot-yellow { background: #ffbd2e; box-shadow: 0 0 6px rgba(255, 189, 46, 0.6); }
+  .term-dot-green { background: #27c93f; box-shadow: 0 0 6px rgba(39, 201, 63, 0.6); }
   .term-title {
     position: absolute;
     left: 50%;
@@ -93,10 +93,11 @@
     font-size: 0.78rem;
     color: var(--text-dim, #8b949e);
     letter-spacing: 0.05em;
+    white-space: nowrap;
   }
   .boot-inner {
     padding: 24px;
-    min-height: 320px;
+    height: 360px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -109,8 +110,9 @@
     align-items: center;
     border-bottom: 1px dashed rgba(47, 129, 247, 0.25);
     padding-bottom: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     font-size: 0.75rem;
+    flex-shrink: 0;
   }
   .badge-tag {
     color: #58a6ff;
@@ -120,25 +122,38 @@
   .badge-status {
     background: rgba(47, 129, 247, 0.15);
     color: #388bfd;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 3px 10px;
+    border-radius: 6px;
     border: 1px solid rgba(47, 129, 247, 0.3);
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+  .badge-status.badge-online {
+    background: rgba(46, 160, 67, 0.2);
+    color: #3fb950;
+    border-color: rgba(63, 185, 80, 0.4);
+    box-shadow: 0 0 10px rgba(63, 185, 80, 0.3);
   }
   .boot-lines {
     display: flex;
     flex-direction: column;
     gap: 8px;
     flex-grow: 1;
-    margin-bottom: 20px;
+    overflow-y: auto;
+    margin-bottom: 14px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(47, 129, 247, 0.3) transparent;
   }
   .boot-line {
     line-height: 1.5;
-    animation: fadeInLine 0.2s ease;
+    animation: fadeInLine 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .boot-line :global(.time-stamp) { color: #8b949e; opacity: 0.7; margin-right: 8px; }
   .boot-line :global(.tag-ok) { color: #3fb950; font-weight: 700; }
   .boot-line :global(.tag-init) { color: #d29922; font-weight: 700; }
   .boot-line :global(.tag-cmd) { color: #58a6ff; font-weight: 700; }
-  .boot-line :global(.tag-ready) { color: #388bfd; font-weight: 700; text-shadow: 0 0 8px rgba(56, 139, 253, 0.6); }
+  .boot-line :global(.tag-ready) { color: #388bfd; font-weight: 700; text-shadow: 0 0 10px rgba(56, 139, 253, 0.7); }
   .boot-line :global(.text-msg) { color: #c9d1d9; }
 
   .boot-progress-wrap {
@@ -146,7 +161,8 @@
     align-items: center;
     gap: 14px;
     border-top: 1px solid rgba(47, 129, 247, 0.2);
-    padding-top: 16px;
+    padding-top: 14px;
+    flex-shrink: 0;
   }
   .boot-progress-bar {
     flex-grow: 1;
@@ -154,20 +170,20 @@
     background: #161b22;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid rgba(47, 129, 247, 0.2);
+    border: 1px solid rgba(47, 129, 247, 0.25);
   }
   .boot-progress-fill {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #1f6beb, #58a6ff);
-    box-shadow: 0 0 12px rgba(88, 166, 255, 0.8);
-    transition: width 0.3s ease;
+    box-shadow: 0 0 14px rgba(88, 166, 255, 0.8);
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .boot-progress-text {
     font-size: 0.82rem;
     color: #58a6ff;
     font-weight: 700;
-    min-width: 50px;
+    min-width: 52px;
     text-align: right;
   }
   .boot-cursor {
@@ -176,7 +192,7 @@
     font-weight: 700;
   }
   @keyframes blink { 50% { opacity: 0; } }
-  @keyframes fadeInLine { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInLine { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
   @media (prefers-reduced-motion: reduce) {
     #boot-overlay { display: none; }
@@ -188,16 +204,17 @@
   const linesEl = document.getElementById('boot-lines');
   const progressFill = document.getElementById('boot-progress-fill');
   const progressPct = document.getElementById('boot-progress-pct');
+  const statusBadge = document.getElementById('boot-status-badge');
 
   const script = [
-    { html: '<span class="tag-cmd">guest@zeroXmoRamadan:~$</span> <span class="text-msg">./boot_sequence.sh --verbose</span>', pct: 10, delay: 350 },
-    { html: '<span class="tag-init">[ INIT ]</span> <span class="text-msg">Initializing kernel architecture v4.19-sec...</span>', pct: 25, delay: 400 },
-    { html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Mounting /dev/skills & /dev/logs</span>', pct: 40, delay: 400 },
-    { html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Loading SOC & Blue Team Operations framework</span>', pct: 55, delay: 450 },
-    { html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Decrypting CTF writeups & digital forensics database</span>', pct: 70, delay: 450 },
-    { html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Synchronizing projects & security research labs</span>', pct: 85, delay: 400 },
-    { html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Verifying Education credentials (Luxor University FCI)</span>', pct: 95, delay: 350 },
-    { html: '<span class="tag-ready">[ READY ]</span> <span class="text-msg">System online. Launching interface...</span>', pct: 100, delay: 500 },
+    { time: '0.002814', html: '<span class="tag-cmd">guest@zeroXmoRamadan:~$</span> <span class="text-msg">./boot_sequence.sh --verbose</span>', pct: 10, delay: 280 },
+    { time: '0.041290', html: '<span class="tag-init">[ INIT ]</span> <span class="text-msg">Initializing kernel architecture v4.19-sec...</span>', pct: 25, delay: 320 },
+    { time: '0.108420', html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Mounting /dev/skills & /dev/logs</span>', pct: 40, delay: 320 },
+    { time: '0.245012', html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Loading SOC & Blue Team Operations framework</span>', pct: 55, delay: 350 },
+    { time: '0.419080', html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Decrypting CTF writeups & digital forensics database</span>', pct: 70, delay: 350 },
+    { time: '0.621004', html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Synchronizing projects & security research labs</span>', pct: 85, delay: 320 },
+    { time: '0.810520', html: '<span class="tag-ok">[ OK ]</span> <span class="text-msg">Verifying Education credentials (Luxor University FCI)</span>', pct: 95, delay: 280 },
+    { time: '1.000000', html: '<span class="tag-ready">[ READY ]</span> <span class="text-msg">System online. Launching interface...</span>', pct: 100, delay: 400 },
   ];
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -209,7 +226,31 @@
     setTimeout(() => {
       document.documentElement.classList.add('is-booted');
       overlay?.remove();
-    }, 1250);
+    }, 750);
+  }
+
+  let currentDisplayedPct = 0;
+  function animatePct(targetPct: number) {
+    if (!progressPct) return;
+    const startPct = currentDisplayedPct;
+    const duration = 250;
+    const startTime = performance.now();
+
+    function step(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const val = Math.floor(startPct + (targetPct - startPct) * progress);
+      currentDisplayedPct = val;
+      if (progressPct) progressPct.textContent = val + '%';
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        currentDisplayedPct = targetPct;
+        if (progressPct) progressPct.textContent = targetPct + '%';
+      }
+    }
+    requestAnimationFrame(step);
   }
 
   if (reduceMotion || sessionStorage.getItem('booted')) {
@@ -217,25 +258,36 @@
     document.documentElement.classList.add('is-booted');
     overlay?.remove();
   } else {
-    let step = 0;
-    function runStep() {
-      if (step >= script.length) {
+    let stepIndex = 0;
+
+    function runNextStep() {
+      if (stepIndex >= script.length) {
+        if (statusBadge) {
+          statusBadge.textContent = 'ONLINE';
+          statusBadge.classList.add('badge-online');
+        }
         sessionStorage.setItem('booted', '1');
-        setTimeout(finish, 400);
+        setTimeout(finish, 350);
         return;
       }
-      const current = script[step];
+
+      const current = script[stepIndex];
       const div = document.createElement('div');
       div.className = 'boot-line';
-      div.innerHTML = current.html;
-      linesEl?.appendChild(div);
+      div.innerHTML = `<span class="time-stamp">[ ${current.time} ]</span>` + current.html;
+      
+      if (linesEl) {
+        linesEl.appendChild(div);
+        linesEl.scrollTop = linesEl.scrollHeight;
+      }
 
       if (progressFill) progressFill.style.width = current.pct + '%';
-      if (progressPct) progressPct.textContent = current.pct + '%';
+      animatePct(current.pct);
 
-      step++;
-      setTimeout(runStep, current.delay);
+      stepIndex++;
+      setTimeout(runNextStep, current.delay);
     }
-    setTimeout(runStep, 200);
+
+    setTimeout(runNextStep, 150);
   }
 </script>

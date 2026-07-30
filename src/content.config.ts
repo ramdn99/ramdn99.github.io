@@ -19,6 +19,7 @@ const writeups = defineCollection({
     date: z.string(),
     tags: z.array(z.string()).default([]),
     summary: z.string(),
+    readTime: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

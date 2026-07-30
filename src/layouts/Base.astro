@@ -15,7 +15,10 @@ const { title, description = 'Blue team & cybersecurity portfolio.' } = Astro.pr
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <title>./ramdn.sh --render</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <title>{title || './ramdn.sh'}</title>
     <script is:inline>
       if (sessionStorage.getItem('booted') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('is-booted');
@@ -33,10 +36,9 @@ const { title, description = 'Blue team & cybersecurity portfolio.' } = Astro.pr
     <header class="classbar">
       <div class="classbar-inner">
         <a class="cb-left" href="/" title="Home">
-          ~/portfolio
+          ./ramdn.sh
         </a>
         <span class="cb-right">
-          <button type="button" class="fx-btn" data-fx-toggle title="Toggle cursor animation FX">FX: ON</button>
           <i class="led-dot"></i>
           <span data-clock>00:00:00</span> EGY
         </span>
@@ -56,6 +58,12 @@ const { title, description = 'Blue team & cybersecurity portfolio.' } = Astro.pr
       </div>
     </footer>
 
+    <!-- FLYOUT BACK TO TOP BUTTON -->
+    <button type="button" id="back-to-top" class="back-to-top-btn" aria-label="Back to top" title="Back to top">
+      <span class="btt-icon">↑</span>
+      <span class="btt-text">TOP</span>
+    </button>
+
     <script src="../scripts/scramble.ts"></script>
     <script>
       function updateClock() {
@@ -73,6 +81,35 @@ const { title, description = 'Blue team & cybersecurity portfolio.' } = Astro.pr
       }
       updateClock();
       setInterval(updateClock, 1000);
+
+      function setupBackToTop() {
+        const btn = document.getElementById('back-to-top');
+        if (!btn) return;
+
+        const toggleVisible = () => {
+          if (window.scrollY > 250) {
+            btn.classList.add('is-visible');
+          } else {
+            btn.classList.remove('is-visible');
+          }
+        };
+
+        window.addEventListener('scroll', toggleVisible, { passive: true });
+        toggleVisible();
+
+        btn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupBackToTop);
+      } else {
+        setupBackToTop();
+      }
     </script>
   </body>
 </html>

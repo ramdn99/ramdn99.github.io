@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import TagFilterBar from '../../components/TagFilterBar.astro';
 import { getCollection } from 'astro:content';
 import { plainExcerpt } from '../../lib/excerpt';
 
@@ -12,20 +13,25 @@ function parseDate(d: string): number {
   return new Date(d).getTime();
 }
 
+function extractFirstImage(markdown: string): string | undefined {
+  const match = markdown.match(/!\[.*?\]\((.*?)\)/);
+  return match ? match[1] : undefined;
+}
+
 const entries = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
+
+const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).sort();
 ---
-<Base title="./projects — portfolio">
+<Base title="./projects — ./ramdn.sh">
   <section class="dsec">
     <div class="dsec-head">
       <span class="dsec-prompt">$</span>
       <span class="dsec-title">tree ./projects --all</span>
       <span class="dsec-meta">{entries.length} entries</span>
     </div>
-    
-    <p class="dim" style="margin-bottom: 24px; font-size: 0.92rem;">
-      every project, in full. tap a card for a quick excerpt, or open the full entry for the complete markdown notes.
-    </p>
+
+    <TagFilterBar tags={allTags} />
 
     <div class="card-grid">
       {entries.map((e) => (
@@ -35,6 +41,7 @@ const entries = (await getCollection('projects', ({ data }) => !data.draft))
           tags={e.data.tags}
           summary={e.data.summary}
           excerpt={plainExcerpt(e.body)}
+          image={extractFirstImage(e.body)}
           href={`/projects/${e.id}/`}
         />
       ))}

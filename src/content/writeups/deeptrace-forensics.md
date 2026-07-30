@@ -2,7 +2,8 @@
 title: "“DeepTrace” — 1st Forensics Challenge in Connectors CTF Qualifications by Connectors Team"
 date: "17-09-2025"
 tags: ['writeup', 'ctf', 'forensics', 'digital-forensics', 'dfir']
-summary: "Category: Digital Forensics and Incident Response (DFIR)."
+summary: "Analysis of PDF metadata and embedded images to recover hidden flag fragments."
+readTime: "3 min"
 mediumUrl: "https://medium.com/@zeroXmoRamadan/deeptrace-forensics-challenge-in-connectors-ctf-qualifications-by-connectors-team-284304950704"
 ---
 

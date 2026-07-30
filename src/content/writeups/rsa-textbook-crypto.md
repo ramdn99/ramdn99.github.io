@@ -2,7 +2,8 @@
 title: "“RSA-Textbook” — Cryptography Challenge in CyCTF Qualifications by Cyshield"
 date: "10-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
-summary: "Category: Cryptography"
+summary: "Attacking textbook RSA encryption using small exponent and broadcast attacks."
+readTime: "3 min"
 mediumUrl: "https://medium.com/@zeroXmoRamadan/rsa-textbook-cryptography-challenge-in-cyctf-qualifications-by-cyshield-590edb105f01"
 ---
 

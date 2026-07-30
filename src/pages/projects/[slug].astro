@@ -1,6 +1,21 @@
 ---
 import Base from '../../layouts/Base.astro';
+import EntryCard from '../../components/EntryCard.astro';
 import { getCollection, render } from 'astro:content';
+import { plainExcerpt } from '../../lib/excerpt';
+
+function parseDate(d: string): number {
+  if (d.includes('-') && d.split('-')[0].length === 2) {
+    const [dd, mm, yyyy] = d.split('-');
+    return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10)).getTime();
+  }
+  return new Date(d).getTime();
+}
+
+function extractFirstImage(markdown: string): string | undefined {
+  const match = markdown.match(/!\[.*?\]\((.*?)\)/);
+  return match ? match[1] : undefined;
+}
 
 export async function getStaticPaths() {
   const entries = await getCollection('projects', ({ data }) => !data.draft);
@@ -11,9 +26,14 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+const filteredHeadings = (headings || []).filter((h) => h.depth >= 2 && h.depth <= 3);
+
+const allProjects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
+const otherProjects = allProjects.filter((p) => p.id !== entry.id);
 ---
-<Base title={`${entry.data.title} — projects`}>
+<Base title={`${entry.data.title} — ./ramdn.sh`}>
   <article class="dsec">
     <div style="margin-bottom: 24px;">
       <a href="/projects/" class="btn" style="font-size:0.82rem;">
@@ -33,21 +53,355 @@ const { Content } = await render(entry);
       </div>
     </div>
 
+    {filteredHeadings.length > 0 && (
+      <div id="toc-floating-root" class="toc-floating-root">
+        <!-- TRIGGER BUTTON WHEN HIDDEN -->
+        <button type="button" class="toc-float-trigger" id="toc-float-trigger" aria-label="Show Index" title="Show Index">
+          <span class="toc-icon">≡</span>
+          <span>INDEX</span>
+        </button>
+
+        <!-- FLOATING MARGIN INDEX PANEL -->
+        <aside class="toc-float-panel" id="toc-float-panel">
+          <div class="toc-float-header">
+            <span class="toc-float-title">
+              <span class="toc-dot">●</span> INDEX
+            </span>
+            <button type="button" class="toc-float-hide" id="toc-float-hide" title="Hide Index to save screen space">
+              <span>HIDE ◄</span>
+            </button>
+          </div>
+          <nav class="toc-float-nav">
+            <ul class="toc-float-list">
+              {filteredHeadings.map((h) => (
+                <li class={`toc-float-item toc-depth-${h.depth}`}>
+                  <a href={`#${h.slug}`} class="toc-float-link" data-slug={h.slug}>
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      </div>
+    )}
+
     <div class="doc-article-body">
       <div class="markdown-body">
         <Content />
       </div>
     </div>
+
+    {otherProjects.length > 0 && (
+      <section class="dsec" style="margin-top: 48px;">
+        <div class="dsec-head">
+          <span class="dsec-prompt">$</span>
+          <span class="dsec-title">tree ./more_projects</span>
+          <span class="dsec-meta">{otherProjects.length} available</span>
+        </div>
+        <div class="card-grid">
+          {otherProjects.slice(0, 3).map((p) => (
+            <EntryCard
+              title={p.data.title}
+              date={p.data.date}
+              tags={p.data.tags}
+              summary={p.data.summary}
+              excerpt={plainExcerpt(p.body)}
+              image={extractFirstImage(p.body)}
+              href={`/projects/${p.id}/`}
+            />
+          ))}
+        </div>
+        <div class="see-more-wrap">
+          <a class="btn see-all-btn" href="/projects/">
+            see all projects ({allProjects.length}) →
+          </a>
+        </div>
+      </section>
+    )}
   </article>
 </Base>
 
+<script>
+  function setupTOC() {
+    const root = document.getElementById('toc-floating-root');
+    const hideBtn = document.getElementById('toc-float-hide');
+    const triggerBtn = document.getElementById('toc-float-trigger');
+    const panel = document.getElementById('toc-float-panel');
+    const links = document.querySelectorAll<HTMLAnchorElement>('.toc-float-link');
+
+    if (!root) return;
+
+    if (window.innerWidth <= 1024) {
+      root.classList.add('is-hidden');
+    }
+
+    if (hideBtn) {
+      hideBtn.addEventListener('click', () => {
+        root.classList.add('is-hidden');
+      });
+    }
+
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', () => {
+        root.classList.remove('is-hidden');
+      });
+    }
+
+    document.addEventListener('pointerdown', (e) => {
+      if (root.classList.contains('is-hidden')) return;
+      const target = e.target as Node;
+      if (panel && !panel.contains(target) && triggerBtn && !triggerBtn.contains(target)) {
+        root.classList.add('is-hidden');
+      }
+    });
+
+    links.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const slug = link.getAttribute('data-slug');
+        if (!slug) return;
+        const target = document.getElementById(slug);
+        if (target) {
+          const headerOffset = 85;
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          history.pushState(null, '', `#${slug}`);
+
+          if (window.innerWidth <= 1024) {
+            root.classList.add('is-hidden');
+          }
+        }
+      });
+    });
+
+    const headingEls = Array.from(links)
+      .map((l) => document.getElementById(l.getAttribute('data-slug') || ''))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (headingEls.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const activeSlug = entry.target.id;
+              links.forEach((l) => {
+                if (l.getAttribute('data-slug') === activeSlug) {
+                  l.classList.add('is-active');
+                } else {
+                  l.classList.remove('is-active');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-10% 0px -60% 0px' }
+      );
+
+      headingEls.forEach((h) => observer.observe(h));
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupTOC);
+  } else {
+    setupTOC();
+  }
+</script>
+
 <style>
+  .card-grid {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .card-grid > :global(.card) {
+    flex: 1;
+    min-width: 0;
+    max-width: 360px;
+  }
+  .see-more-wrap {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .see-all-btn {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .toc-floating-root {
+    position: relative;
+  }
+
+  .toc-float-panel {
+    position: fixed;
+    top: 70px;
+    left: max(20px, calc(50vw - 750px));
+    width: 235px;
+    max-height: calc(100vh - 160px);
+    z-index: 100;
+    padding: 14px 16px;
+    background: rgba(6, 10, 17, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(47, 129, 247, 0.25);
+    border-left: 2px solid var(--blue-bright);
+    border-radius: 10px;
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(47, 129, 247, 0.05);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s ease;
+  }
+
+  .toc-floating-root.is-hidden .toc-float-panel {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-16px);
+    pointer-events: none;
+  }
+
+  .toc-float-trigger {
+    position: fixed;
+    top: 70px;
+    left: 20px;
+    z-index: 101;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: #080d16;
+    border: 1px solid rgba(47, 129, 247, 0.4);
+    color: #58a6ff;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+    letter-spacing: 0.05em;
+  }
+
+  .toc-floating-root.is-hidden .toc-float-trigger {
+    display: inline-flex;
+  }
+
+  .toc-float-trigger:hover {
+    background: #0f172a;
+    border-color: #00f0ff;
+    color: #00f0ff;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .toc-float-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(47, 129, 247, 0.25);
+  }
+
+  .toc-float-title {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #58a6ff;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .toc-dot {
+    color: #00f0ff;
+    font-size: 0.65rem;
+    text-shadow: 0 0 8px #00f0ff;
+  }
+
+  .toc-float-hide {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: #8b949e;
+    background: rgba(47, 129, 247, 0.08);
+    border: 1px solid rgba(47, 129, 247, 0.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-weight: 600;
+  }
+
+  .toc-float-hide:hover {
+    color: #00f0ff;
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.12);
+  }
+
+  .toc-float-nav {
+    max-height: 45vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(47, 129, 247, 0.35) transparent;
+  }
+
+  .toc-float-list {
+    list-style: none;
+    padding: 0 0 0 6px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 1px dashed rgba(47, 129, 247, 0.25);
+  }
+
+  .toc-float-item {
+    line-height: 1.4;
+  }
+
+  .toc-depth-2 {
+    padding-left: 8px;
+  }
+
+  .toc-depth-3 {
+    padding-left: 20px;
+  }
+
+  .toc-float-link {
+    font-size: 0.88rem;
+    color: #8b949e;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    display: inline-block;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+  }
+
+  .toc-float-link:hover {
+    color: #58a6ff;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  .toc-float-link.is-active {
+    color: #00f0ff;
+    font-weight: 700;
+    border-bottom: 2px solid #00f0ff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  }
+
   .doc-article-body {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     padding: 32px;
-    border-radius: 4px;
+    border-radius: 12px;
+    width: 100%;
   }
+
   .markdown-body :global(h2) {
     color: var(--blue-bright);
     margin-top: 36px;
@@ -57,15 +411,43 @@ const { Content } = await render(entry);
     padding-bottom: 8px;
     font-family: var(--font-sans);
     font-weight: 700;
+    scroll-margin-top: 85px;
   }
-  .markdown-body :global(h3) { color: var(--text); margin-top: 24px; margin-bottom: 10px; font-size: 1.05rem; }
+  .markdown-body :global(h3) { color: var(--text); margin-top: 24px; margin-bottom: 10px; font-size: 1.05rem; scroll-margin-top: 85px; }
   .markdown-body :global(p) { margin: 0 0 16px 0; color: var(--text); line-height: 1.65; }
   .markdown-body :global(ul), .markdown-body :global(ol) { margin: 0 0 16px 0; padding-left: 22px; color: var(--text); }
   .markdown-body :global(li) { margin-bottom: 6px; }
   .markdown-body :global(pre) { margin: 16px 0 24px 0; }
   .markdown-body :global(strong) { color: var(--blue-bright); }
 
-  @media (max-width: 600px) {
-    .doc-article-body { padding: 18px; }
+  @media (max-width: 1480px) {
+    .toc-float-panel {
+      left: 20px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .toc-float-panel {
+      top: 65px;
+      left: 14px;
+      width: min(320px, calc(100vw - 28px));
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+    }
+    .toc-float-trigger {
+      top: 65px;
+      left: 14px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .card-grid {
+      flex-direction: column;
+    }
+    .card-grid > :global(.card) {
+      max-width: 100%;
+    }
+    .doc-article-body {
+      padding: 18px;
+    }
   }
 </style>
