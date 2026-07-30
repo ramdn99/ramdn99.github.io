@@ -527,8 +527,11 @@ a:hover {
 /* COMMS LINK GRID WITH ROUNDED BUTTONS */
 .dcomms {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+}
+.dcomms a.dc-full {
+  grid-column: 1 / -1;
 }
 .dcomms a {
   background: var(--bg-panel-2);
@@ -778,6 +781,9 @@ tr:nth-child(even),
   }
   .matrix {
     grid-template-columns: 1fr;
+  }
+  .dcomms {
+    grid-template-columns: repeat(2, 1fr);
   }
   .doc {
     padding-left: 16px;
