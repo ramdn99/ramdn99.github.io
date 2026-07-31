@@ -14,8 +14,12 @@ function parseDate(d: string): number {
 }
 
 function extractFirstImage(markdown: string): string | undefined {
-  const match = markdown.match(/!\[.*?\]\((.*?)\)/);
-  return match ? match[1] : undefined;
+  if (!markdown) return undefined;
+  const mdMatch = markdown.match(/!\[.*?\]\((.*?)\)/);
+  if (mdMatch && mdMatch[1]) return mdMatch[1].trim();
+  const htmlMatch = markdown.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (htmlMatch && htmlMatch[1]) return htmlMatch[1].trim();
+  return undefined;
 }
 
 export async function getStaticPaths() {
@@ -28,13 +32,14 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
+const firstImage = extractFirstImage(entry.body);
 const filteredHeadings = (headings || []).filter((h) => h.depth >= 2 && h.depth <= 3);
 
 const allProjects = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
 const otherProjects = allProjects.filter((p) => p.id !== entry.id);
 ---
-<Base title={`${entry.data.title} — ./ramdn.sh`}>
+<Base title={`${entry.data.title} — ./ramdn.sh`} description={entry.data.summary} image={firstImage}>
   <article class="dsec">
     <div style="margin-bottom: 24px;">
       <a href="/projects/" class="btn" style="font-size:0.82rem;">
