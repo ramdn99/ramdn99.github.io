@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
 import { getCollection, render } from 'astro:content';
 import { plainExcerpt } from '../../lib/excerpt';
 
@@ -51,6 +52,7 @@ const otherProjects = allProjects.filter((p) => p.id !== entry.id);
       <div style="display: flex; gap: 6px; flex-wrap: wrap;">
         {entry.data.tags.map((t) => <span class="mx-tag">{t}</span>)}
       </div>
+      <ShareButtons title={entry.data.title} summary={entry.data.summary} />
     </div>
 
     {filteredHeadings.length > 0 && (
@@ -90,6 +92,7 @@ const otherProjects = allProjects.filter((p) => p.id !== entry.id);
       <div class="markdown-body">
         <Content />
       </div>
+      <ShareButtons title={entry.data.title} summary={entry.data.summary} />
     </div>
 
     {otherProjects.length > 0 && (

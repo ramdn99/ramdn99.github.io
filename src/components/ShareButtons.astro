@@ -1,0 +1,255 @@
+---
+interface Props {
+  title: string;
+  summary?: string;
+  url?: string;
+}
+
+const { title, summary = '', url } = Astro.props;
+
+const siteOrigin = Astro.site ? Astro.site.origin : 'https://ramdn.me';
+const pageUrl = url || new URL(Astro.url.pathname, siteOrigin).href;
+
+const encodedUrl = encodeURIComponent(pageUrl);
+const encodedTitle = encodeURIComponent(title);
+const tweetText = encodeURIComponent(`Check out "${title}" on ./ramdn.sh`);
+
+const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+const xShareUrl = `https://x.com/intent/tweet?text=${tweetText}&url=${encodedUrl}`;
+---
+
+<div class="share-buttons-container" data-share-title={title}>
+  <div class="share-label">
+    <span class="share-prompt">$</span>
+    <span class="share-text">share --to</span>
+  </div>
+  <div class="share-actions">
+    <a
+      href={linkedinShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-btn share-btn-linkedin"
+      aria-label="Share on LinkedIn"
+      data-share-platform="linkedin"
+    >
+      <svg class="share-icon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+      </svg>
+      <span>LinkedIn</span>
+    </a>
+
+    <a
+      href={xShareUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="share-btn share-btn-x"
+      aria-label="Share on X"
+      data-share-platform="x"
+    >
+      <svg class="share-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+      <span>Post on X</span>
+    </a>
+
+    <button
+      type="button"
+      class="share-btn share-btn-copy"
+      aria-label="Copy article link to clipboard"
+      title="Copy link to clipboard"
+    >
+      <svg class="share-icon copy-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span class="copy-text">Copy Link</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  function setupShareButtons() {
+    const containers = document.querySelectorAll<HTMLElement>('.share-buttons-container');
+
+    containers.forEach((container) => {
+      const linkedinBtn = container.querySelector<HTMLAnchorElement>('[data-share-platform="linkedin"]');
+      const xBtn = container.querySelector<HTMLAnchorElement>('[data-share-platform="x"]');
+      const copyBtn = container.querySelector<HTMLButtonElement>('.share-btn-copy');
+      const copyTextEl = container.querySelector<HTMLElement>('.copy-text');
+      const title = container.dataset.shareTitle || document.title;
+
+      // Update URLs with client window location if available
+      const currentFullUrl = window.location.href;
+      const encodedUrl = encodeURIComponent(currentFullUrl);
+      const encodedText = encodeURIComponent(`Check out "${title}" on ./ramdn.sh`);
+
+      if (linkedinBtn) {
+        linkedinBtn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+      }
+      if (xBtn) {
+        xBtn.href = `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+      }
+
+      if (copyBtn && copyTextEl) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(currentFullUrl);
+            const originalText = copyTextEl.textContent;
+            copyTextEl.textContent = 'Copied!';
+            copyBtn.classList.add('is-copied');
+
+            setTimeout(() => {
+              copyTextEl.textContent = originalText;
+              copyBtn.classList.remove('is-copied');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy link:', err);
+          }
+        });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupShareButtons);
+  } else {
+    setupShareButtons();
+  }
+</script>
+
+<style>
+  .share-buttons-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-md);
+    margin-top: 16px;
+    font-family: var(--font-mono);
+  }
+
+  .share-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+
+  .share-prompt {
+    color: var(--blue-bright);
+  }
+
+  .share-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: var(--radius-xs);
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1;
+  }
+
+  .share-btn:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* LinkedIn Button Style */
+  .share-btn-linkedin:hover {
+    background: rgba(10, 102, 194, 0.15);
+    border-color: #0a66c2;
+    color: #389ce8;
+    box-shadow: 0 0 12px rgba(10, 102, 194, 0.35);
+  }
+
+  .share-btn-linkedin .share-icon {
+    color: #0a66c2;
+    transition: color 0.2s ease;
+  }
+
+  .share-btn-linkedin:hover .share-icon {
+    color: #389ce8;
+  }
+
+  /* X Button Style */
+  .share-btn-x:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+  }
+
+  .share-btn-x .share-icon {
+    color: var(--text-dim);
+    transition: color 0.2s ease;
+  }
+
+  .share-btn-x:hover .share-icon {
+    color: #ffffff;
+  }
+
+  /* Copy Button Style */
+  .share-btn-copy {
+    background: var(--bg-panel-2);
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .share-btn-copy:hover {
+    background: var(--blue-glow);
+    border-color: var(--blue-bright);
+    color: var(--blue-bright);
+    box-shadow: 0 0 12px rgba(47, 129, 247, 0.3);
+  }
+
+  .share-btn-copy.is-copied {
+    background: rgba(63, 185, 80, 0.15);
+    border-color: var(--green-ok);
+    color: var(--green-ok);
+    box-shadow: 0 0 12px rgba(63, 185, 80, 0.35);
+  }
+
+  .share-icon {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .share-buttons-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+    .share-actions {
+      width: 100%;
+    }
+    .share-btn {
+      flex: 1;
+      justify-content: center;
+      padding: 6px 10px;
+    }
+  }
+</style>
