@@ -1,3 +1,22 @@
+import fs from 'node:fs';
+
+export function extractFirstImage(entry: any): string | undefined {
+  let content = entry?.body;
+  if (!content && entry?.filePath) {
+    try {
+      content = fs.readFileSync(entry.filePath, 'utf-8');
+    } catch (e) {
+      // ignore
+    }
+  }
+  if (!content) return undefined;
+  const mdMatch = content.match(/!\[.*?\]\((.*?)\)/);
+  if (mdMatch && mdMatch[1]) return mdMatch[1].trim();
+  const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (htmlMatch && htmlMatch[1]) return htmlMatch[1].trim();
+  return undefined;
+}
+
 export function plainExcerpt(markdown: string, maxChars = 480): string {
   let text = markdown
     .replace(/```[\s\S]*?```/g, ' ')

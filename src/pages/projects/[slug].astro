@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import { getCollection, render } from 'astro:content';
-import { plainExcerpt } from '../../lib/excerpt';
+import { plainExcerpt, extractFirstImage } from '../../lib/excerpt';
 
 function parseDate(d: string): number {
   if (d.includes('-') && d.split('-')[0].length === 2) {
@@ -13,26 +13,16 @@ function parseDate(d: string): number {
   return new Date(d).getTime();
 }
 
-function extractFirstImage(markdown: string): string | undefined {
-  if (!markdown) return undefined;
-  const mdMatch = markdown.match(/!\[.*?\]\((.*?)\)/);
-  if (mdMatch && mdMatch[1]) return mdMatch[1].trim();
-  const htmlMatch = markdown.match(/<img[^>]+src=["']([^"']+)["']/i);
-  if (htmlMatch && htmlMatch[1]) return htmlMatch[1].trim();
-  return undefined;
-}
-
 export async function getStaticPaths() {
   const entries = await getCollection('projects', ({ data }) => !data.draft);
   return entries.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry },
+    props: { entry, firstImage: extractFirstImage(entry) },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, firstImage } = Astro.props;
 const { Content, headings } = await render(entry);
-const firstImage = extractFirstImage(entry.body);
 const filteredHeadings = (headings || []).filter((h) => h.depth >= 2 && h.depth <= 3);
 
 const allProjects = (await getCollection('projects', ({ data }) => !data.draft))
