@@ -10,11 +10,29 @@ export function extractFirstImage(entry: any): string | undefined {
     }
   }
   if (!content) return undefined;
+  
+  let imgUrl: string | undefined;
   const mdMatch = content.match(/!\[.*?\]\((.*?)\)/);
-  if (mdMatch && mdMatch[1]) return mdMatch[1].trim();
-  const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  if (htmlMatch && htmlMatch[1]) return htmlMatch[1].trim();
-  return undefined;
+  if (mdMatch && mdMatch[1]) {
+    imgUrl = mdMatch[1].trim();
+  } else {
+    const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (htmlMatch && htmlMatch[1]) {
+      imgUrl = htmlMatch[1].trim();
+    }
+  }
+
+  if (!imgUrl) return undefined;
+
+  // Clean title quotes or parameters if any e.g. "path/to/img.png 'Title'"
+  imgUrl = imgUrl.split(/\s+/)[0].replace(/^['"]|['"]$/g, '');
+
+  // Normalize path with leading slash if relative
+  if (!imgUrl.startsWith('http://') && !imgUrl.startsWith('https://') && !imgUrl.startsWith('/')) {
+    imgUrl = '/' + imgUrl;
+  }
+
+  return imgUrl;
 }
 
 export function plainExcerpt(markdown: string, maxChars = 480): string {
