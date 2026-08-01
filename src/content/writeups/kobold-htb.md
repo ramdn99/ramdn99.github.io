@@ -160,13 +160,7 @@ LinPEAS flagged a critical misconfiguration:
 Accessible group not shown in id: docker (gid=111)
 ```
 
-Although `id` did not initially show the docker group for user **ben**, the group was accessible via `newgrp`. The following Docker images were present locally (no internet pull required):
-
-```
-REPOSITORY                    TAG       IMAGE ID
-mysql                         latest    f66b7a288113
-privatebin/nginx-fpm-alpine   2.0.2     f5f5564e6731
-```
+Although `id` did not initially show the docker group for user **ben**, the group was accessible via `newgrp`.
 
 ### Docker Group — Root Escape
 
@@ -181,6 +175,15 @@ Confirm group membership:
 ```bash
 id
 # uid=1001(ben) gid=111(docker) groups=111(docker),37(operator),1001(ben)
+```
+
+The following Docker images were present locally:
+
+```
+$ docker images
+REPOSITORY                    TAG       IMAGE ID
+mysql                         latest    f66b7a288113
+privatebin/nginx-fpm-alpine   2.0.2     f5f5564e6731
 ```
 
 Mount the host filesystem inside a Docker container and `chroot` into it as root:
