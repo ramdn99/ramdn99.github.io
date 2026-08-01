@@ -104,8 +104,8 @@ const otherWriteups = allWriteups.filter((w) => w.id !== entry.id);
               date={w.data.date}
               tags={w.data.tags}
               summary={w.data.summary}
-              excerpt={plainExcerpt(w.body)}
-              image={extractFirstImage(w.body)}
+              excerpt={plainExcerpt(w)}
+              image={extractFirstImage(w)}
               readTime={w.data.readTime}
               href={`/write_ups/${w.id}/`}
             />

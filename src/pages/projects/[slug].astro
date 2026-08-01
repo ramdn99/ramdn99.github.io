@@ -104,8 +104,8 @@ const otherProjects = allProjects.filter((p) => p.id !== entry.id);
               date={p.data.date}
               tags={p.data.tags}
               summary={p.data.summary}
-              excerpt={plainExcerpt(p.body)}
-              image={extractFirstImage(p.body)}
+              excerpt={plainExcerpt(p)}
+              image={extractFirstImage(p)}
               href={`/projects/${p.id}/`}
             />
           ))}

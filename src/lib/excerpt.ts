@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 
-export function extractFirstImage(entry: any): string | undefined {
-  let content = entry?.body;
-  if (!content && entry?.filePath) {
+export function extractFirstImage(entryOrMarkdown: any): string | undefined {
+  let content = typeof entryOrMarkdown === 'string' ? entryOrMarkdown : entryOrMarkdown?.body;
+  if (!content && entryOrMarkdown?.filePath) {
     try {
-      content = fs.readFileSync(entry.filePath, 'utf-8');
+      content = fs.readFileSync(entryOrMarkdown.filePath, 'utf-8');
     } catch (e) {
       // ignore
     }
@@ -35,7 +35,17 @@ export function extractFirstImage(entry: any): string | undefined {
   return imgUrl;
 }
 
-export function plainExcerpt(markdown: string, maxChars = 480): string {
+export function plainExcerpt(entryOrMarkdown: any, maxChars = 480): string {
+  let markdown = typeof entryOrMarkdown === 'string' ? entryOrMarkdown : entryOrMarkdown?.body;
+  if (!markdown && entryOrMarkdown?.filePath) {
+    try {
+      markdown = fs.readFileSync(entryOrMarkdown.filePath, 'utf-8');
+    } catch (e) {
+      // ignore
+    }
+  }
+  if (!markdown) markdown = '';
+
   let text = markdown
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
@@ -48,3 +58,4 @@ export function plainExcerpt(markdown: string, maxChars = 480): string {
   if (text.length <= maxChars) return text;
   return text.slice(0, maxChars).replace(/\s+\S*$/, '') + '…';
 }
+
