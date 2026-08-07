@@ -4,11 +4,17 @@ interface Props {
 }
 const { tags } = Astro.props;
 ---
-<div class="tag-filter-bar" data-tag-filter-bar>
-  <span class="tag-filter-label">
-    <span class="dim">$</span> filter --tag:
-  </span>
-  <div class="tag-filter-options">
+<div class="tag-filter-bar is-collapsed" data-tag-filter-bar>
+  <div class="tag-filter-header">
+    <span class="tag-filter-label">
+      <span class="dim">$</span> filter --tag:
+    </span>
+    <button type="button" class="tag-filter-toggle" data-tag-filter-toggle aria-expanded="false" title="Toggle tag filters">
+      <span class="tf-toggle-text">SHOW</span>
+      <span class="tf-toggle-icon">▼</span>
+    </button>
+  </div>
+  <div class="tag-filter-options" data-tag-filter-options>
     <button type="button" class="tag-btn tag-btn-active" data-tag="all">
       all
     </button>
@@ -25,6 +31,19 @@ const { tags } = Astro.props;
     const filterBars = document.querySelectorAll('[data-tag-filter-bar]');
     
     filterBars.forEach((bar) => {
+      const toggleBtn = bar.querySelector<HTMLButtonElement>('[data-tag-filter-toggle]');
+      const toggleText = bar.querySelector<HTMLElement>('.tf-toggle-text');
+      const toggleIcon = bar.querySelector<HTMLElement>('.tf-toggle-icon');
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const isCollapsed = bar.classList.toggle('is-collapsed');
+          toggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
+          if (toggleText) toggleText.textContent = isCollapsed ? 'SHOW' : 'HIDE';
+          if (toggleIcon) toggleIcon.textContent = isCollapsed ? '▼' : '▲';
+        });
+      }
+
       const buttons = bar.querySelectorAll<HTMLButtonElement>('.tag-btn');
       const section = bar.closest('.dsec');
       if (!section) return;
@@ -82,12 +101,16 @@ const { tags } = Astro.props;
         });
 
         if (metaSpan) {
-          if (activeTags.size === 0) {
-            metaSpan.textContent = `${totalCount} entries`;
-          } else {
-            const activeList = Array.from(activeTags).map((t) => `#${t}`).join(', ');
-            metaSpan.textContent = `${visibleCount} of ${totalCount} entries (${activeList})`;
+          let suffix = 'entries';
+          const originalText = metaSpan.getAttribute('data-original-meta') || metaSpan.textContent || '';
+          if (!metaSpan.hasAttribute('data-original-meta')) {
+            metaSpan.setAttribute('data-original-meta', originalText);
           }
+          const match = originalText.trim().match(/^\d+\s+(.*)$/);
+          if (match && match[1]) {
+            suffix = match[1];
+          }
+          metaSpan.textContent = `${visibleCount} ${suffix}`;
         }
       }
 
@@ -122,14 +145,20 @@ const { tags } = Astro.props;
 <style>
   .tag-filter-bar {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
     margin-bottom: 24px;
     padding: 10px 14px;
     background: var(--bg-panel-2);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    flex-wrap: wrap;
+    transition: all 0.2s ease;
+  }
+  .tag-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
   }
   .tag-filter-label {
     font-family: var(--font-mono);
@@ -138,11 +167,35 @@ const { tags } = Astro.props;
     font-weight: 600;
     white-space: nowrap;
   }
+  .tag-filter-toggle {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .tag-filter-toggle:hover {
+    color: var(--blue-bright);
+    border-color: var(--border-bright);
+    background: rgba(47, 129, 247, 0.08);
+  }
   .tag-filter-options {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
+    transition: all 0.2s ease;
+  }
+  .tag-filter-bar.is-collapsed .tag-filter-options {
+    display: none;
   }
   .tag-btn {
     font-family: var(--font-mono);
