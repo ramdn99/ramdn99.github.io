@@ -1,0 +1,179 @@
+---
+export interface NavItem {
+  id: string;
+  data: {
+    title: string;
+  };
+}
+
+export interface Props {
+  prev?: NavItem | null;
+  next?: NavItem | null;
+  basePath: string;
+}
+
+const { prev, next, basePath } = Astro.props;
+
+const cleanBasePath = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+---
+
+{(prev || next) && (
+  <nav class="pn-nav" aria-label="Pagination Navigation">
+    <div class="pn-col pn-left">
+      {prev && (
+        <a href={`${cleanBasePath}/${prev.id}/`} class="pn-btn pn-btn-prev" title={`Previous: ${prev.data.title}`}>
+          <span class="pn-arrow">←</span>
+          <div class="pn-content">
+            <span class="pn-sub">PREVIOUS</span>
+            <span class="pn-title">{prev.data.title}</span>
+          </div>
+        </a>
+      )}
+    </div>
+
+    <div class="pn-col pn-right">
+      {next && (
+        <a href={`${cleanBasePath}/${next.id}/`} class="pn-btn pn-btn-next" title={`Next: ${next.data.title}`}>
+          <div class="pn-content">
+            <span class="pn-sub">NEXT</span>
+            <span class="pn-title">{next.data.title}</span>
+          </div>
+          <span class="pn-arrow">→</span>
+        </a>
+      )}
+    </div>
+  </nav>
+)}
+
+<style>
+  .pn-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 16px;
+    margin-top: 36px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .pn-col {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+  }
+
+  .pn-col.pn-left {
+    justify-content: flex-start;
+  }
+
+  .pn-col.pn-right {
+    justify-content: flex-end;
+  }
+
+  .pn-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--bg-panel, #080d16);
+    border: 1px solid var(--border, rgba(47, 129, 247, 0.25));
+    border-radius: 8px;
+    color: var(--text, #c9d1d9);
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .pn-btn-prev:hover {
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.05);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.2), inset 0 0 10px rgba(0, 240, 255, 0.05);
+    transform: translateX(-4px);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .pn-btn-next:hover {
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.05);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.2), inset 0 0 10px rgba(0, 240, 255, 0.05);
+    transform: translateX(4px);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .pn-arrow {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--blue-bright, #58a6ff);
+    transition: transform 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .pn-btn-prev:hover .pn-arrow {
+    color: #00f0ff;
+    transform: translateX(-3px);
+  }
+
+  .pn-btn-next:hover .pn-arrow {
+    color: #00f0ff;
+    transform: translateX(3px);
+  }
+
+  .pn-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .pn-btn-next .pn-content {
+    text-align: right;
+  }
+
+  .pn-sub {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--blue-bright, #58a6ff);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .pn-title {
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text, #c9d1d9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+    transition: color 0.2s ease;
+  }
+
+  .pn-btn:hover .pn-title {
+    color: #ffffff;
+  }
+
+  @media (max-width: 640px) {
+    .pn-nav {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pn-btn {
+      width: 100%;
+    }
+    .pn-btn-next {
+      justify-content: space-between;
+    }
+    .pn-btn-prev {
+      justify-content: space-between;
+    }
+    .pn-title {
+      max-width: 100%;
+    }
+  }
+</style>

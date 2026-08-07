@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
+import PrevNextNav from '../../components/PrevNextNav.astro';
 import { getCollection, render } from 'astro:content';
 import { plainExcerpt, extractFirstImage } from '../../lib/excerpt';
 
@@ -28,6 +29,10 @@ const filteredHeadings = (headings || []).filter((h) => h.depth >= 2 && h.depth 
 const allWriteups = (await getCollection('writeups', ({ data }) => !data.draft))
   .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
 const otherWriteups = allWriteups.filter((w) => w.id !== entry.id);
+
+const currentIndex = allWriteups.findIndex((w) => w.id === entry.id);
+const prevWriteup = currentIndex > 0 ? allWriteups[currentIndex - 1] : null;
+const nextWriteup = currentIndex < allWriteups.length - 1 ? allWriteups[currentIndex + 1] : null;
 ---
 <Base title={`${entry.data.title} — ./ramdn.sh`} description={entry.data.summary} image={firstImage}>
   <article class="dsec">
@@ -89,6 +94,8 @@ const otherWriteups = allWriteups.filter((w) => w.id !== entry.id);
       </div>
       <ShareButtons title={entry.data.title} summary={entry.data.summary} />
     </div>
+
+    <PrevNextNav prev={prevWriteup} next={nextWriteup} basePath="/write_ups" />
 
     {otherWriteups.length > 0 && (
       <section class="dsec" style="margin-top: 48px;">
