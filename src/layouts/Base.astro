@@ -15,11 +15,11 @@ const siteOrigin = Astro.site ? Astro.site.origin : 'https://ramdn.me';
 const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
 
 // Default to static lightweight og-image.png for social link previews (WhatsApp, Telegram, etc.)
-const defaultOgImage = '/og-image.png';
+const defaultOgImage = '/images/website-cover.jpg';
 const metaImage = image || defaultOgImage;
 const socialImageURL = new URL(metaImage, siteOrigin);
 const imageType = socialImageURL.pathname.endsWith('.jpg') || socialImageURL.pathname.endsWith('.jpeg') ? 'image/jpeg' : (socialImageURL.pathname.endsWith('.webp') ? 'image/webp' : 'image/png');
-const twitterCardType = image ? 'summary_large_image' : 'summary';
+const twitterCardType = 'summary_large_image';
 ---
 <!doctype html>
 <html lang="en">

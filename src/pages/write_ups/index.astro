@@ -18,7 +18,7 @@ const entries = (await getCollection('writeups', ({ data }) => !data.draft))
 
 const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).sort();
 ---
-<Base title="./write_ups — ./ramdn.sh">
+<Base title="./write_ups — ./ramdn.sh" image="/images/writeups-cover.jpg">
   <section class="dsec">
     <div class="dsec-head">
       <span class="dsec-prompt">$</span>

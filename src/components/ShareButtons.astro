@@ -10,12 +10,17 @@ const { title, summary = '', url } = Astro.props;
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://ramdn.me';
 const pageUrl = url || new URL(Astro.url.pathname, siteOrigin).href;
 
+const xUrlWithRefresh = pageUrl.includes('?')
+  ? (pageUrl.includes('refresh=1') ? pageUrl : `${pageUrl}&refresh=1`)
+  : `${pageUrl}?refresh=1`;
+
 const encodedUrl = encodeURIComponent(pageUrl);
+const encodedXUrl = encodeURIComponent(xUrlWithRefresh);
 const encodedTitle = encodeURIComponent(title);
 const tweetText = encodeURIComponent(`Check out "${title}" on ./ramdn.sh`);
 
 const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-const xShareUrl = `https://x.com/intent/tweet?text=${tweetText}&url=${encodedUrl}`;
+const xShareUrl = `https://x.com/intent/tweet?text=${tweetText}&url=${encodedXUrl}`;
 ---
 
 <div class="share-buttons-container" data-share-title={title}>
@@ -80,14 +85,19 @@ const xShareUrl = `https://x.com/intent/tweet?text=${tweetText}&url=${encodedUrl
 
       // Update URLs with client window location if available
       const currentFullUrl = window.location.href;
+      const xUrlWithRefresh = currentFullUrl.includes('?')
+        ? (currentFullUrl.includes('refresh=1') ? currentFullUrl : `${currentFullUrl}&refresh=1`)
+        : `${currentFullUrl}?refresh=1`;
+
       const encodedUrl = encodeURIComponent(currentFullUrl);
+      const encodedXUrl = encodeURIComponent(xUrlWithRefresh);
       const encodedText = encodeURIComponent(`Check out "${title}" on ./ramdn.sh`);
 
       if (linkedinBtn) {
         linkedinBtn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
       }
       if (xBtn) {
-        xBtn.href = `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+        xBtn.href = `https://x.com/intent/tweet?text=${encodedText}&url=${encodedXUrl}`;
       }
 
       if (copyBtn && copyTextEl) {

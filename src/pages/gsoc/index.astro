@@ -10,7 +10,7 @@ const entries = (await getCollection('gsoc', ({ data }) => !data.draft))
 
 const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).sort();
 ---
-<Base title="./GSOC — ./ramdn.sh">
+<Base title="./GSOC — ./ramdn.sh" image="/images/gsoc-cover.jpg">
   <section class="dsec">
     <div class="dsec-head">
       <span class="dsec-prompt">$</span>
