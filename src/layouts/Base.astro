@@ -20,6 +20,8 @@ const metaImage = image || defaultOgImage;
 const socialImageURL = new URL(metaImage, siteOrigin);
 const imageType = socialImageURL.pathname.endsWith('.jpg') || socialImageURL.pathname.endsWith('.jpeg') ? 'image/jpeg' : (socialImageURL.pathname.endsWith('.webp') ? 'image/webp' : 'image/png');
 const twitterCardType = 'summary_large_image';
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const ogType = isHome ? 'website' : 'article';
 ---
 <!doctype html>
 <html lang="en">
@@ -43,7 +45,7 @@ const twitterCardType = 'summary_large_image';
 
     <!-- Open Graph / WhatsApp / Telegram / Facebook / LinkedIn / Discord -->
     <meta property="og:site_name" content="./ramdn.sh" />
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalURL.href} />
     <meta property="og:title" content={siteTitle} />
     <meta property="og:description" content={description} />
