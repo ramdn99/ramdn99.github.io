@@ -34,4 +34,17 @@ const achievements = defineCollection({
   }),
 });
 
-export const collections = { projects, writeups, achievements };
+const gsoc = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/gsoc' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    tags: z.array(z.string()).default([]),
+    summary: z.string(),
+    readTime: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, writeups, gsoc, achievements };
+

@@ -18,6 +18,9 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft))
 const writeups = (await getCollection('writeups', ({ data }) => !data.draft))
   .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
 
+const gsocWriteups = (await getCollection('gsoc', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, undefined, { numeric: true, sensitivity: 'base' }));
+
 const achievements = (await getCollection('achievements'))
   .sort((a, b) => a.data.order - b.data.order || parseDate(b.data.date) - parseDate(a.data.date));
 
@@ -162,6 +165,34 @@ const skills = {
     <div class="see-more-wrap">
       <a class="btn see-all-btn" href="/write_ups/">
         see all writeups ({writeups.length}) →
+      </a>
+    </div>
+  </section>
+
+  <!-- $ tree ./GSOC -->
+  <section class="dsec" id="gsoc">
+    <div class="dsec-head">
+      <span class="dsec-prompt">$</span>
+      <span class="dsec-title">tree ./GSOC</span>
+      <span class="dsec-meta">{gsocWriteups.length} entries</span>
+    </div>
+    <div class="card-grid">
+      {gsocWriteups.slice(0, 4).map((g) => (
+        <EntryCard
+          title={g.data.title}
+          date={g.data.date}
+          tags={g.data.tags}
+          summary={g.data.summary}
+          excerpt={plainExcerpt(g)}
+          image={extractFirstImage(g)}
+          readTime={g.data.readTime}
+          href={`/gsoc/${g.id}/`}
+        />
+      ))}
+    </div>
+    <div class="see-more-wrap">
+      <a class="btn see-all-btn" href="/gsoc/">
+        see all GSOC material ({gsocWriteups.length}) →
       </a>
     </div>
   </section>
