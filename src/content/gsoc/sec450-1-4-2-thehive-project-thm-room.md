@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.4.2 — TheHive Project (THM Room)"
-date: "04-08-2026"
+date: "05-08-2026"
 tags: ['gsoc', 'sec450', 'thehive', 'cortex', 'tryhackme', 'case-management']
 summary: "Hands-on walkthrough of TheHive Project room on TryHackMe, setting up cases, observables, and Cortex analyzers."
 readTime: "7 min"

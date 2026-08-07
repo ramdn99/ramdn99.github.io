@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.1 — SOC Overview"
-date: "01-08-2026"
+date: "05-08-2026"
 tags: ['gsoc', 'sec450', 'soc-operations', 'blue-team']
 summary: "Core components of security operations, SOC mission, risk appetite, org structures, and governance."
 readTime: "10 min"

@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.2 — Defensible Network Concepts"
-date: "02-08-2026"
+date: "05-08-2026"
 tags: ['gsoc', 'sec450', 'network-security', 'monitoring', 'nsm']
 summary: "Understanding defensible networks, network vs host monitoring, data collection, and log centralization."
 readTime: "9 min"

@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.5.3 — MISP (THM Room)"
-date: "05-08-2026"
+date: "06-08-2026"
 tags: ['gsoc', 'sec450', 'misp', 'cti', 'tryhackme', 'threat-sharing']
 summary: "Complete walkthrough of MISP room on TryHackMe, event creation, attribute correlation, and threat intelligence sharing."
 readTime: "8 min"

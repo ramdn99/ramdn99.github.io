@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.3 — Security Events, Alerts, Anomalies & Incidents"
-date: "03-08-2026"
+date: "05-08-2026"
 tags: ['gsoc', 'sec450', 'alert-triage', 'incident-response', 'soc-workflows']
 summary: "Differentiating events, alerts, and incidents, alert triage workflows, and reducing false positives."
 readTime: "8 min"

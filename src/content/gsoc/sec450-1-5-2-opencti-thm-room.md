@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.5.2 — OpenCTI (THM Room)"
-date: "05-08-2026"
+date: "06-08-2026"
 tags: ['gsoc', 'sec450', 'opencti', 'cti', 'tryhackme', 'threat-intelligence']
 summary: "Practical guide and solution for OpenCTI TryHackMe room, exploring STIX2 structures, entities, and threat actor mapping."
 readTime: "9 min"

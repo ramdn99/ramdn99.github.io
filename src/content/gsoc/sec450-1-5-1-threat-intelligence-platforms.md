@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.5.1 — Threat Intelligence Platforms"
-date: "05-08-2026"
+date: "06-08-2026"
 tags: ['gsoc', 'sec450', 'cti', 'threat-intel', 'tip', 'misp', 'opencti']
 summary: "Fundamentals of Cyber Threat Intelligence (CTI), threat intel platforms, IOC feeds, and platform workflows."
 readTime: "10 min"

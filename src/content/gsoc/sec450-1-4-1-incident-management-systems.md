@@ -1,6 +1,6 @@
 ---
 title: "SEC450.1.4.1 — Incident Management Systems"
-date: "04-08-2026"
+date: "05-08-2026"
 tags: ['gsoc', 'sec450', 'incident-management', 'thehive', 'playbooks']
 summary: "Ticketing and case management systems, security playbooks, metrics tracking, and investigation lifecycle."
 readTime: "8 min"
