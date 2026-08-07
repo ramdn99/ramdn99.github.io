@@ -41,6 +41,7 @@ const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).s
 
     <TagFilterBar tags={allTags} />
 
+    <div class="gsoc-section-label">SEC450.1 (Book 1)</div>
     <div class="card-grid">
       {entries.map((e) => (
         <EntryCard
@@ -63,6 +64,24 @@ const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).s
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 24px;
+  }
+  .gsoc-section-label {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--blue-bright);
+    margin-top: 24px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.05em;
+  }
+  .gsoc-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-bright) 0%, transparent 100%);
   }
   .gsoc-index-panel {
     background: var(--bg-panel);
