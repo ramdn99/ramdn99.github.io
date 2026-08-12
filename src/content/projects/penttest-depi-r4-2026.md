@@ -343,7 +343,7 @@ The seeding process sets up standard accounts to test privileges and exploit vec
 ---
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://github.com/zeroXmoRamadan/PentTest-DEPI-R4-2026" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://github.com/ramdn99/PentTest-DEPI-R4-2026" target="_blank" rel="noopener noreferrer">
     GitHub repo.
   </a>
 </div>

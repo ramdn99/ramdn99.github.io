@@ -4,7 +4,7 @@ date: "17-09-2025"
 tags: ['writeup', 'ctf', 'forensics', 'digital-forensics', 'dfir']
 summary: "Analysis of PDF metadata and embedded images to recover hidden flag fragments."
 readTime: "3 min"
-mediumUrl: "https://medium.com/@zeroXmoRamadan/deeptrace-forensics-challenge-in-connectors-ctf-qualifications-by-connectors-team-284304950704"
+mediumUrl: "https://medium.com/@ramdn99/deeptrace-forensics-challenge-in-connectors-ctf-qualifications-by-connectors-team-284304950704"
 ---
 
 
@@ -123,7 +123,7 @@ CONCTF{D01n9_F023n51C5_ON_pdf_f1l35_15_345y}
 THANK YOU FOR READING!🫶
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://medium.com/@zeroXmoRamadan/deeptrace-forensics-challenge-in-connectors-ctf-qualifications-by-connectors-team-284304950704" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://medium.com/@ramdn99/deeptrace-forensics-challenge-in-connectors-ctf-qualifications-by-connectors-team-284304950704" target="_blank" rel="noopener noreferrer">
     Medium writeup.
   </a>
 </div>

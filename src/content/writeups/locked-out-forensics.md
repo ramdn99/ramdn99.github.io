@@ -4,7 +4,7 @@ date: "17-09-2025"
 tags: ['writeup', 'ctf', 'forensics', 'digital-forensics', 'dfir']
 summary: "Memory forensics and password hash cracking using Volatility and hashcat."
 readTime: "3 min"
-mediumUrl: "https://medium.com/@zeroXmoRamadan/locked-out-2nd-digital-forensics-challenge-in-connectorsctf-qualifications-by-connectors-team-ab105e1d7c75"
+mediumUrl: "https://medium.com/@ramdn99/locked-out-2nd-digital-forensics-challenge-in-connectorsctf-qualifications-by-connectors-team-ab105e1d7c75"
 ---
 
 
@@ -126,7 +126,7 @@ CONCTF{iloveyou}
 THANK YOU FOR READING!🫶
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://medium.com/@zeroXmoRamadan/locked-out-2nd-digital-forensics-challenge-in-connectorsctf-qualifications-by-connectors-team-ab105e1d7c75" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://medium.com/@ramdn99/locked-out-2nd-digital-forensics-challenge-in-connectorsctf-qualifications-by-connectors-team-ab105e1d7c75" target="_blank" rel="noopener noreferrer">
     Medium writeup.
   </a>
 </div>

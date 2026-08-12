@@ -4,7 +4,7 @@ date: "10-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
 summary: "Attacking textbook RSA encryption using small exponent and broadcast attacks."
 readTime: "3 min"
-mediumUrl: "https://medium.com/@zeroXmoRamadan/rsa-textbook-cryptography-challenge-in-cyctf-qualifications-by-cyshield-590edb105f01"
+mediumUrl: "https://medium.com/@ramdn99/rsa-textbook-cryptography-challenge-in-cyctf-qualifications-by-cyshield-590edb105f01"
 ---
 
 
@@ -156,7 +156,7 @@ CYCTF{4c95930d2ce17f72cc4feba2bc34d9ee51bc3968}
 THANK YOU FOR READING!🫶
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://medium.com/@zeroXmoRamadan/rsa-textbook-cryptography-challenge-in-cyctf-qualifications-by-cyshield-590edb105f01" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://medium.com/@ramdn99/rsa-textbook-cryptography-challenge-in-cyctf-qualifications-by-cyshield-590edb105f01" target="_blank" rel="noopener noreferrer">
     Medium writeup.
   </a>
 </div>

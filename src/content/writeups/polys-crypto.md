@@ -4,7 +4,7 @@ date: "13-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
 summary: "Polynomial-based cryptography challenge analysis and algebraic flag recovery."
 readTime: "3 min"
-mediumUrl: "https://medium.com/@zeroXmoRamadan/polys-cryptography-challenge-in-cyCTF-qualifications-by-cyshield-6414258f78b8"
+mediumUrl: "https://medium.com/@ramdn99/polys-cryptography-challenge-in-cyCTF-qualifications-by-cyshield-6414258f78b8"
 ---
 
 
@@ -136,7 +136,7 @@ But that’s a story for another time.
 THANK YOU FOR READING!🫶
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://medium.com/@zeroXmoRamadan/polys-cryptography-challenge-in-cyCTF-qualifications-by-cyshield-6414258f78b8" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://medium.com/@ramdn99/polys-cryptography-challenge-in-cyCTF-qualifications-by-cyshield-6414258f78b8" target="_blank" rel="noopener noreferrer">
     Medium writeup.
   </a>
 </div>

@@ -24,7 +24,7 @@ A CLI tool that, given only a domain, performs comprehensive web reconnaissance:
 ## Install
 
 ```bash
-git clone https://github.com/zeroXmoRamadan/Web-Scanner.git
+git clone https://github.com/ramdn99/Web-Scanner.git
 cd Web-Scanner
 python3 -m venv venv
 source venv/bin/activate        # Linux/macOS
@@ -190,7 +190,7 @@ The tool uses curated SecLists wordlists organized by size under `seclists/`:
 ---
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://github.com/zeroXmoRamadan/Web-Scanner" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://github.com/ramdn99/Web-Scanner" target="_blank" rel="noopener noreferrer">
     GitHub repo.
   </a>
 </div>

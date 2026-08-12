@@ -4,7 +4,7 @@ date: "09-11-2025"
 tags: ['writeup', 'ctf', 'cryptography', 'math', 'ctf-crypto']
 summary: "Reversing custom XOR and modular arithmetic encryption algorithms."
 readTime: "6 min"
-mediumUrl: "https://medium.com/@zeroXmoRamadan/symmetric-cryptography-challenge-in-cyctf-qualifications-by-cyshield-e854721c8c77"
+mediumUrl: "https://medium.com/@ramdn99/symmetric-cryptography-challenge-in-cyctf-qualifications-by-cyshield-e854721c8c77"
 ---
 
 
@@ -296,7 +296,7 @@ CyCTF{8817602d859c72ea815d3e34a44292afb5a3e3ae}
 THANK YOU FOR READING!🫶
 
 <div style="margin-top: 32px;">
-  <a class="btn" href="https://medium.com/@zeroXmoRamadan/symmetric-cryptography-challenge-in-cyctf-qualifications-by-cyshield-e854721c8c77" target="_blank" rel="noopener noreferrer">
+  <a class="btn" href="https://medium.com/@ramdn99/symmetric-cryptography-challenge-in-cyctf-qualifications-by-cyshield-e854721c8c77" target="_blank" rel="noopener noreferrer">
     Medium writeup.
   </a>
 </div>
