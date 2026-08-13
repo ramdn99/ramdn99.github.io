@@ -6,7 +6,7 @@ summary: "A comprehensive reference guide covering core networking concepts from
 readTime: "25 min"
 ---
 
-![Networking Fundamentals Cheat Sheet](/images/cheatSheets/networking_cheatsheet.png)
+![Networking Fundamentals Cheat Sheet](/images/cheatSheets/networking_cheatsheet.jpg)
 
 ## 1. Networking Basics & Cabling
 

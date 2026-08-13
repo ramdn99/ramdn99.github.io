@@ -7,8 +7,10 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
 }
-const { title, description = 'Blue Team & Cybersecurity blog.', image } = Astro.props;
+const { title, description = 'Blue Team & Cybersecurity blog.', image, imageWidth, imageHeight } = Astro.props;
 const siteTitle = title || './ramdn.sh';
 
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://ramdn.me';
@@ -53,6 +55,9 @@ const ogType = isHome ? 'website' : 'article';
     <meta property="og:image:url" content={socialImageURL.href} />
     <meta property="og:image:secure_url" content={socialImageURL.href} />
     <meta property="og:image:type" content={imageType} />
+    <meta property="og:image:width" content={String(imageWidth || 1200)} />
+    <meta property="og:image:height" content={String(imageHeight || 630)} />
+    <meta property="og:image:alt" content={siteTitle} />
 
     <!-- Twitter / X Meta Tags -->
     <meta name="twitter:card" content={twitterCardType} />
