@@ -258,6 +258,8 @@ const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentI
     border-left: 2px solid var(--blue-bright);
     border-radius: 10px;
     box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(47, 129, 247, 0.05);
+    transform: translateZ(0);
+    will-change: transform;
     transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s ease;
   }
 

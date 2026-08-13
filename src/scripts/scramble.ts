@@ -50,7 +50,22 @@ function reveal(el: HTMLElement) {
   });
 }
 
-// AMBIENT BACKGROUND SYMBOLS GRID (No cursor tracking)
+// Pre-render glyphs onto tiny offscreen canvases for ultra-fast bitmap blits
+function createGlyphCanvas(char: string, fillStyle: string, alpha: number): HTMLCanvasElement {
+  const gCanvas = document.createElement('canvas');
+  gCanvas.width = 16;
+  gCanvas.height = 16;
+  const gCtx = gCanvas.getContext('2d');
+  if (gCtx) {
+    gCtx.font = '11px "JetBrains Mono", monospace';
+    gCtx.fillStyle = fillStyle;
+    gCtx.globalAlpha = alpha;
+    gCtx.fillText(char, 2, 12);
+  }
+  return gCanvas;
+}
+
+// AMBIENT BACKGROUND SYMBOLS GRID (Offscreen glyph pre-rendering + Scroll-paused RAF)
 function initAmbientAsteriskOcean() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) return;
@@ -69,13 +84,21 @@ function initAmbientAsteriskOcean() {
   let width = (canvas.width = window.innerWidth);
   let height = (canvas.height = window.innerHeight);
 
-  const getSpacing = () => (window.innerWidth < 640 ? 18 : 14);
+  const getSpacing = () => (window.innerWidth < 768 ? 24 : 16);
   let SPACING = getSpacing();
   const DECAY_DURATION = 1400;
 
   let cols = Math.ceil(width / SPACING) + 1;
   let rows = Math.ceil(height / SPACING) + 1;
   let grid: Float64Array = new Float64Array(cols * rows);
+
+  // Pre-rendered offscreen glyph canvases
+  const glyphs = {
+    hash: createGlyphCanvas('#', '#6584a8', 0.85),
+    dollar: createGlyphCanvas('$', '#2f4562', 0.55),
+    starActive: createGlyphCanvas('*', '#1e2d42', 0.35),
+    starIdle: createGlyphCanvas('*', '#121c29', 0.15),
+  };
 
   function buildGrid() {
     SPACING = getSpacing();
@@ -90,23 +113,38 @@ function initAmbientAsteriskOcean() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
     buildGrid();
-  });
+  }, { passive: true });
+
+  // Scroll listener to pause background canvas draw during active scrolling
+  let isScrolling = false;
+  let scrollTimeout: number | undefined;
+
+  window.addEventListener('scroll', () => {
+    isScrolling = true;
+    if (scrollTimeout !== undefined) clearTimeout(scrollTimeout);
+    scrollTimeout = window.setTimeout(() => {
+      isScrolling = false;
+    }, 120);
+  }, { passive: true });
 
   let lastRandomShuffle = 0;
 
   function render(now: number) {
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, width, height);
-    ctx.shadowBlur = 0;
-    ctx.shadowColor = 'transparent';
-    ctx.font = '11px "JetBrains Mono", monospace';
+    // Skip canvas redraw when user is actively scrolling for 100% smooth scroll frames
+    if (isScrolling) {
+      requestAnimationFrame(render);
+      return;
+    }
 
-    // Ambient background symbol random appearance (~250ms)
-    if (now - lastRandomShuffle > 250) {
+    ctx.clearRect(0, 0, width, height);
+
+    // Ambient background symbol random appearance (~300ms)
+    if (now - lastRandomShuffle > 300) {
       lastRandomShuffle = now;
       const totalNodes = cols * rows;
-      for (let k = 0; k < 3; k++) {
+      for (let k = 0; k < 2; k++) {
         const randIdx = Math.floor(Math.random() * totalNodes);
         grid[randIdx] = now;
       }
@@ -122,25 +160,15 @@ function initAmbientAsteriskOcean() {
 
         if (disturbedAt > 0 && elapsed < DECAY_DURATION) {
           const progress = elapsed / DECAY_DURATION;
-          const fadeAlpha = Math.sin(progress * Math.PI);
-
           if (progress < 0.30) {
-            ctx.fillStyle = '#6584a8';
-            ctx.globalAlpha = 0.7 + fadeAlpha * 0.3;
-            ctx.fillText('#', px, py);
+            ctx.drawImage(glyphs.hash, px, py - 11);
           } else if (progress < 0.65) {
-            ctx.fillStyle = '#2f4562';
-            ctx.globalAlpha = 0.45 + fadeAlpha * 0.25;
-            ctx.fillText('$', px, py);
+            ctx.drawImage(glyphs.dollar, px, py - 11);
           } else {
-            ctx.fillStyle = '#1e2d42';
-            ctx.globalAlpha = 0.3 + fadeAlpha * 0.2;
-            ctx.fillText('*', px, py);
+            ctx.drawImage(glyphs.starActive, px, py - 11);
           }
         } else {
-          ctx.fillStyle = '#121c29';
-          ctx.globalAlpha = 0.15;
-          ctx.fillText('*', px, py);
+          ctx.drawImage(glyphs.starIdle, px, py - 11);
         }
       }
     }
@@ -151,21 +179,33 @@ function initAmbientAsteriskOcean() {
   requestAnimationFrame(render);
 }
 
-// Lightweight spotlight tracking for CSS radial gradient
+// RAF-throttled spotlight tracking for CSS radial gradient
 function initSpotlightTracking() {
-  const handlePointer = (clientX: number, clientY: number) => {
-    const gx = (clientX / window.innerWidth) * 100;
-    const gy = (clientY / window.innerHeight) * 100;
-    document.documentElement.style.setProperty('--gx', `${gx}%`);
-    document.documentElement.style.setProperty('--gy', `${gy}%`);
+  let pendingX: number | null = null;
+  let pendingY: number | null = null;
+  let rafId: number | null = null;
+
+  const updateSpotlight = () => {
+    if (pendingX !== null && pendingY !== null) {
+      const gx = (pendingX / window.innerWidth) * 100;
+      const gy = (pendingY / window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--gx', `${gx.toFixed(1)}%`);
+      document.documentElement.style.setProperty('--gy', `${gy.toFixed(1)}%`);
+      pendingX = null;
+      pendingY = null;
+    }
+    rafId = null;
   };
 
-  window.addEventListener('pointermove', (e) => handlePointer(e.clientX, e.clientY));
-  window.addEventListener('touchmove', (e) => {
-    if (e.touches && e.touches[0]) {
-      handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+  const handlePointer = (clientX: number, clientY: number) => {
+    pendingX = clientX;
+    pendingY = clientY;
+    if (!rafId) {
+      rafId = requestAnimationFrame(updateSpotlight);
     }
-  }, { passive: true });
+  };
+
+  window.addEventListener('pointermove', (e) => handlePointer(e.clientX, e.clientY), { passive: true });
 }
 
 function init() {
