@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryCard from '../../components/EntryCard.astro';
+import TagFilterBar from '../../components/TagFilterBar.astro';
+import { getCollection } from 'astro:content';
+import { plainExcerpt, extractFirstImage } from '../../lib/excerpt';
+
+function parseDate(d: string): number {
+  if (d.includes('-') && d.split('-')[0].length === 2) {
+    const [dd, mm, yyyy] = d.split('-');
+    return new Date(parseInt(yyyy, 10), parseInt(mm, 10) - 1, parseInt(dd, 10)).getTime();
+  }
+  return new Date(d).getTime();
+}
+
+const entries = (await getCollection('cheatSheets', ({ data }) => !data.draft))
+  .sort((a, b) => parseDate(b.data.date) - parseDate(a.data.date));
+
+const allTags = Array.from(new Set(entries.flatMap((e) => e.data.tags || []))).sort();
+---
+<Base title="./cheatSheets — ./ramdn.sh" image="/images/cheatSheets-cover.jpg">
+  <section class="dsec">
+    <div class="dsec-head">
+      <span class="dsec-prompt">$</span>
+      <span class="dsec-title">ls ./cheatSheets --all</span>
+      <span class="dsec-meta">{entries.length} entries</span>
+    </div>
+
+    <TagFilterBar tags={allTags} />
+
+    <div class="card-grid">
+      {entries.map((e) => (
+        <EntryCard
+          title={e.data.title}
+          date={e.data.date}
+          tags={e.data.tags}
+          summary={e.data.summary}
+          excerpt={plainExcerpt(e)}
+          image={extractFirstImage(e)}
+          readTime={e.data.readTime}
+          href={`/cheatSheets/${e.id}/`}
+        />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 24px;
+  }
+</style>
