@@ -1,8 +1,8 @@
 ---
 title: "SANS SEC450: Blue Team Fundamentals — Master Study Cheatsheet"
 date: "16-10-2026"
-tags: ["sec450", "gsoc", "blue-team", "soc", "sans", "cheat-sheet"]
-summary: "Comprehensive master study cheatsheet for SANS SEC450 (GSOC) across Books 1–5 covering SOC architecture, network defense, endpoint logging, alert triage, and security automation."
+tags: ["sec450", "blue-team", "soc", "sans", "cheat-sheet"]
+summary: "Comprehensive master study cheatsheet for SANS SEC450 across Books 1–5 covering SOC architecture, network defense, endpoint logging, alert triage, and security automation."
 readTime: "90 min"
 draft: false
 ---
@@ -11,7 +11,7 @@ draft: false
 
 | | |
 |---|---|
-| **Course** | SANS SEC450 — Blue Team Fundamentals: Security Operations and Analysis (GSOC) |
+| **Course** | SANS SEC450 — Blue Team Fundamentals: Security Operations and Analysis |
 | **Author** | John Hubbard |
 | **Edition** | 2022 SANS Institute |
 | **Coverage** | 5 books, 38 modules, with a quick-reference appendix |
