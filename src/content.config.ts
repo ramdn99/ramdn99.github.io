@@ -34,18 +34,6 @@ const achievements = defineCollection({
   }),
 });
 
-const gsoc = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/gsoc' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.string(),
-    tags: z.array(z.string()).default([]),
-    summary: z.string(),
-    readTime: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
-});
-
 const cheatSheets = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/cheatSheets' }),
   schema: z.object({
@@ -58,5 +46,5 @@ const cheatSheets = defineCollection({
   }),
 });
 
-export const collections = { projects, writeups, gsoc, cheatSheets, achievements };
+export const collections = { projects, writeups, cheatSheets, achievements };
 
